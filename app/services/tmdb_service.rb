@@ -141,4 +141,3 @@ class TmdbService
     "#{IMAGE_BASE_URL}#{poster_path}"
   end
 end
-

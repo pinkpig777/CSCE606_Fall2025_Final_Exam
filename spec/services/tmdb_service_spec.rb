@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TmdbService, type: :service do
+RSpec.describe TmdbService do
   let(:service) { described_class.new }
   let(:api_key) { "test_api_key" }
   let(:base_url) { "https://api.themoviedb.org/3" }
