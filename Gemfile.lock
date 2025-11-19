@@ -99,6 +99,9 @@ GEM
     childprocess (4.1.0)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     cucumber (10.1.1)
       base64 (~> 0.2)
@@ -162,10 +165,19 @@ GEM
       railties (>= 6.1.0)
     faker (3.5.2)
       i18n (>= 1.8.11, < 2)
+    faraday (2.14.0)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-http-cache (2.3.0)
+      faraday (>= 0.8)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm-linux-gnu)
     ffi (1.17.2-arm-linux-musl)
+    ffi (1.17.2-arm64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
     ffi (1.17.2-x86_64-linux-musl)
     fugit (1.12.1)
@@ -173,6 +185,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
+    hashdiff (1.1.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.2.2)
@@ -218,6 +231,8 @@ GEM
     minitest (5.26.1)
     msgpack (1.8.0)
     multi_test (1.1.0)
+    net-http (0.8.0)
+      uri (>= 0.11.1)
     net-imap (0.5.12)
       date
       net-protocol
@@ -232,8 +247,6 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     net-ssh (7.3.0)
-    net-http (0.4.1)
-      uri
     nio4r (2.7.5)
     nokogiri (1.18.10-aarch64-linux-gnu)
       racc (~> 1.4)
@@ -242,6 +255,8 @@ GEM
     nokogiri (1.18.10-arm-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.10-arm-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.10-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
@@ -256,6 +271,7 @@ GEM
     pg (1.6.2)
     pg (1.6.2-aarch64-linux)
     pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-arm64-darwin)
     pg (1.6.2-x86_64-linux)
     pg (1.6.2-x86_64-linux-musl)
     pp (0.6.3)
@@ -381,6 +397,8 @@ GEM
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2)
+    shoulda-matchers (6.3.0)
+      activesupport (>= 5.2.0)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -426,6 +444,7 @@ GEM
     tailwindcss-ruby (4.1.16)
     tailwindcss-ruby (4.1.16-aarch64-linux-gnu)
     tailwindcss-ruby (4.1.16-aarch64-linux-musl)
+    tailwindcss-ruby (4.1.16-arm64-darwin)
     tailwindcss-ruby (4.1.16-x86_64-linux-gnu)
     tailwindcss-ruby (4.1.16-x86_64-linux-musl)
     terminal-table (4.0.0)
@@ -433,6 +452,7 @@ GEM
     thor (1.4.0)
     thruster (0.1.16)
     thruster (0.1.16-aarch64-linux)
+    thruster (0.1.16-arm64-darwin)
     thruster (0.1.16-x86_64-linux)
     timeout (0.4.4)
     tsort (0.2.0)
@@ -460,7 +480,7 @@ GEM
     webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
-      hashdiff (>= 1.0.0, < 2.0.0)
+      hashdiff (>= 0.4.0, < 2.0.0)
     websocket-driver (0.8.0)
       base64
       websocket-extensions (>= 0.1.0)
@@ -468,29 +488,32 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.7.3)
-    crack (1.0.0)
-      bigdecimal
-      rexml
-    faraday (2.11.0)
-      faraday-net_http (>= 2.0, < 3.1)
-      ruby2_keywords (>= 0.0.4)
-    faraday-http-cache (2.3.0)
-      faraday (>= 0.8)
-    faraday-net_http (3.1.0)
-      net-http (>= 0.2.0)
-    hashdiff (1.1.0)
-    ruby2_keywords (0.0.6)
-    shoulda-matchers (6.3.0)
-      activesupport (>= 6.0.0)
 
 PLATFORMS
   aarch64-linux
+  aarch64-linux
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-gnu
   aarch64-linux-gnu
   aarch64-linux-musl
+  aarch64-linux-musl
+  aarch64-linux-musl
+  arm-linux-gnu
+  arm-linux-gnu
   arm-linux-gnu
   arm-linux-musl
+  arm-linux-musl
+  arm-linux-musl
+  arm64-darwin-24
+  x86_64-linux
+  x86_64-linux
   x86_64-linux
   x86_64-linux-gnu
+  x86_64-linux-gnu
+  x86_64-linux-gnu
+  x86_64-linux-musl
+  x86_64-linux-musl
   x86_64-linux-musl
 
 DEPENDENCIES
@@ -504,6 +527,8 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
+  faraday
+  faraday-http-cache
   importmap-rails
   jbuilder
   kamal
@@ -529,8 +554,6 @@ DEPENDENCIES
   web-console
   webdrivers
   webmock
-  faraday
-  faraday-http-cache
 
 BUNDLED WITH
    2.7.2
