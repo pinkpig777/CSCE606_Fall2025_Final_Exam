@@ -30,8 +30,12 @@
 
         <div class="hidden md:flex gap-6 text-cinematico-light font-inter">
           <%= link_to "Home", root_path, class: "hover:text-cinematico-gold transition" %>
-          <%= link_to "Explore", "#", class: "hover:text-cinematico-gold transition" %>
-          <%= link_to "Sign In", "#", class: "hover:text-cinematico-gold transition" %>
+          <%= link_to "Search Movies", movies_path, class: "hover:text-cinematico-gold transition" %>
+          <% if user_signed_in? %>
+            <%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "hover:text-cinematico-gold transition" %>
+          <% else %>
+            <%= link_to "Sign In", new_user_session_path, class: "hover:text-cinematico-gold transition" %>
+          <% end %>
         </div>
       </div>
     </nav>

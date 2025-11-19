@@ -77,3 +77,5 @@ end
 
 gem "devise"
 gem "redis"
+gem "faraday"
+gem "faraday-http-cache"
