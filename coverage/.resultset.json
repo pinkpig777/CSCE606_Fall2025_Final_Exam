@@ -1,160 +1,554 @@
 {
   "RSpec": {
     "coverage": {
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/helpers/application_helper.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/helpers/application_helper.rb": {
         "lines": [
           1,
           null
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/helpers/home_helper.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/helpers/home_helper.rb": {
         "lines": [
           1,
           null
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/achievement.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/controllers/movies_controller.rb": {
         "lines": [
+          1,
+          1,
+          null,
+          1,
+          10,
+          10,
+          10,
+          10,
+          10,
+          null,
+          10,
+          8,
+          null,
+          8,
+          1,
+          1,
+          1,
+          1,
+          null,
+          7,
+          7,
+          7,
+          null,
+          null,
+          7,
+          null,
+          7,
+          null,
+          null,
+          7,
+          null,
+          null,
+          2,
+          2,
+          2,
+          2,
+          null,
+          null,
+          null,
+          10,
+          10,
+          null,
+          null,
+          1,
+          7,
+          null,
+          null,
+          7,
+          5,
+          4,
+          3,
+          3,
+          null,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          6,
+          6,
+          5,
+          5,
+          0,
+          null,
+          5,
+          5,
+          null,
+          null,
+          null,
+          null,
+          1,
+          2,
+          null,
+          2,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          1,
+          19,
+          null,
+          null,
+          1,
+          7,
+          null,
+          null,
+          7,
+          1,
+          1,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          7,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          0,
+          null,
+          1,
+          1,
+          null,
+          null,
+          null,
+          7,
+          null,
+          null,
+          1,
+          7,
+          null,
+          10,
+          null,
+          2,
+          null,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          0,
+          null,
+          null,
+          0,
+          null,
+          null,
+          null,
+          0,
+          null,
+          null,
+          null,
+          1,
+          12,
+          13,
+          null,
+          null,
+          null,
+          1,
+          3,
+          null,
+          null,
+          3,
+          3,
+          3,
+          3,
+          3,
+          null,
+          null,
+          null,
+          null,
+          3,
+          3,
+          null,
+          null,
+          3,
+          3,
+          3,
+          null,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          6,
+          3,
+          3,
+          null,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:\"&.\", 0, 5, 13, 5, 34]": {
+            "[:then, 1, 5, 13, 5, 34]": 8,
+            "[:else, 2, 5, 13, 5, 34]": 2
+          },
+          "[:\"&.\", 3, 6, 12, 6, 31]": {
+            "[:then, 4, 6, 12, 6, 31]": 0,
+            "[:else, 5, 6, 12, 6, 31]": 10
+          },
+          "[:\"&.\", 6, 7, 20, 7, 40]": {
+            "[:then, 7, 7, 20, 7, 40]": 1,
+            "[:else, 8, 7, 20, 7, 40]": 9
+          },
+          "[:\"&.\", 9, 8, 21, 8, 42]": {
+            "[:then, 10, 8, 21, 8, 42]": 1,
+            "[:else, 11, 8, 21, 8, 42]": 9
+          },
+          "[:if, 12, 11, 4, 37, 7]": {
+            "[:then, 13, 12, 6, 31, 9]": 8,
+            "[:else, 14, 33, 6, 36, 18]": 2
+          },
+          "[:if, 15, 14, 6, 31, 9]": {
+            "[:then, 16, 15, 8, 18, 26]": 1,
+            "[:else, 17, 20, 8, 30, 34]": 7
+          },
+          "[:\"&.\", 18, 48, 11, 48, 26]": {
+            "[:then, 19, 48, 11, 48, 26]": 3,
+            "[:else, 20, 48, 11, 48, 26]": 4
+          },
+          "[:unless, 21, 48, 4, 57, 7]": {
+            "[:else, 22, 48, 4, 57, 7]": 2,
+            "[:then, 23, 49, 6, 56, 9]": 5
+          },
+          "[:if, 24, 50, 6, 56, 9]": {
+            "[:then, 25, 51, 8, 52, 45]": 3,
+            "[:else, 26, 54, 8, 55, 34]": 1
+          },
+          "[:if, 27, 61, 4, 69, 7]": {
+            "[:then, 28, 62, 6, 68, 9]": 5,
+            "[:else, 29, 61, 4, 69, 7]": 1
+          },
+          "[:if, 30, 63, 6, 68, 9]": {
+            "[:then, 31, 64, 8, 64, 38]": 0,
+            "[:else, 32, 66, 8, 67, 74]": 5
+          },
+          "[:if, 33, 67, 8, 67, 74]": {
+            "[:then, 34, 67, 8, 67, 42]": 5,
+            "[:else, 35, 67, 8, 67, 74]": 0
+          },
+          "[:\"&.\", 36, 73, 12, 73, 33]": {
+            "[:then, 37, 73, 12, 73, 33]": 2,
+            "[:else, 38, 73, 12, 73, 33]": 0
+          },
+          "[:if, 39, 75, 4, 78, 7]": {
+            "[:then, 40, 76, 6, 77, 12]": 1,
+            "[:else, 41, 75, 4, 78, 7]": 1
+          },
+          "[:if, 42, 94, 4, 102, 7]": {
+            "[:then, 43, 95, 6, 101, 9]": 1,
+            "[:else, 44, 94, 4, 102, 7]": 6
+          },
+          "[:if, 45, 96, 6, 101, 9]": {
+            "[:then, 46, 97, 8, 100, 11]": 1,
+            "[:else, 47, 96, 6, 101, 9]": 0
+          },
+          "[:if, 48, 105, 4, 117, 7]": {
+            "[:then, 49, 106, 8, 116, 11]": 1,
+            "[:else, 50, 105, 4, 117, 7]": 6
+          },
+          "[:unless, 51, 108, 10, 108, 40]": {
+            "[:else, 52, 108, 10, 108, 40]": 1,
+            "[:then, 53, 108, 10, 108, 20]": 0
+          },
+          "[:unless, 54, 114, 10, 114, 32]": {
+            "[:else, 55, 114, 10, 114, 32]": 1,
+            "[:then, 56, 114, 10, 114, 20]": 0
+          },
+          "[:case, 57, 123, 4, 143, 7]": {
+            "[:when, 58, 125, 6, 125, 52]": 5,
+            "[:when, 59, 127, 6, 127, 54]": 1,
+            "[:when, 60, 129, 6, 140, 17]": 1,
+            "[:else, 61, 142, 6, 142, 12]": 0
+          },
+          "[:if, 62, 131, 8, 139, 11]": {
+            "[:then, 63, 132, 10, 136, 13]": 1,
+            "[:else, 64, 138, 10, 138, 30]": 0
+          },
+          "[:unless, 65, 153, 4, 153, 36]": {
+            "[:else, 66, 153, 4, 153, 36]": 3,
+            "[:then, 67, 153, 4, 153, 10]": 0
+          },
+          "[:if, 68, 156, 4, 162, 7]": {
+            "[:then, 69, 157, 6, 161, 9]": 3,
+            "[:else, 70, 156, 4, 162, 7]": 0
+          },
+          "[:if, 71, 165, 4, 201, 7]": {
+            "[:then, 72, 166, 6, 200, 9]": 3,
+            "[:else, 73, 165, 4, 201, 7]": 0
+          },
+          "[:if, 74, 169, 6, 183, 9]": {
+            "[:then, 75, 170, 8, 182, 11]": 3,
+            "[:else, 76, 169, 6, 183, 9]": 0
+          },
+          "[:if, 77, 186, 6, 200, 9]": {
+            "[:then, 78, 187, 8, 199, 11]": 3,
+            "[:else, 79, 186, 6, 200, 9]": 0
+          }
+        }
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/controllers/application_controller.rb": {
+        "lines": [
+          1,
+          null,
           1,
           null
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/application_record.rb": {
-        "lines": [
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/email_preference.rb": {
-        "lines": [
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/follow.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/services/tmdb_service.rb": {
         "lines": [
           1,
           1,
           1,
+          null,
+          1,
+          17,
+          17,
+          17,
+          17,
+          17,
+          null,
+          null,
+          null,
+          1,
+          8,
+          null,
+          6,
+          6,
+          null,
+          6,
+          null,
+          null,
+          6,
+          6,
+          6,
+          6,
+          null,
+          null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          null,
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          1,
+          4,
+          null,
+          3,
+          3,
+          null,
+          3,
+          null,
+          null,
+          3,
+          3,
+          3,
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          1,
+          3,
+          null,
+          3,
+          3,
+          null,
+          3,
+          null,
+          null,
+          3,
+          3,
+          3,
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          1,
+          2,
+          2,
+          null,
+          2,
+          null,
+          null,
+          2,
+          2,
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          1,
+          2,
+          1,
+          null,
           null
         ],
-        "branches": {}
+        "branches": {
+          "[:if, 0, 15, 4, 15, 76]": {
+            "[:then, 1, 15, 4, 15, 60]": 2,
+            "[:else, 2, 15, 4, 15, 76]": 6
+          },
+          "[:if, 3, 20, 4, 20, 36]": {
+            "[:then, 4, 20, 4, 20, 17]": 0,
+            "[:else, 5, 20, 4, 20, 36]": 6
+          },
+          "[:if, 6, 52, 6, 52, 48]": {
+            "[:then, 7, 52, 6, 52, 24]": 0,
+            "[:else, 8, 52, 6, 52, 48]": 0
+          },
+          "[:if, 9, 29, 6, 40, 9]": {
+            "[:then, 10, 31, 8, 39, 9]": 0,
+            "[:else, 11, 29, 6, 40, 9]": 0
+          },
+          "[:if, 12, 32, 8, 32, 50]": {
+            "[:then, 13, 32, 8, 32, 26]": 0,
+            "[:else, 14, 32, 8, 32, 50]": 0
+          },
+          "[:if, 15, 42, 6, 48, 9]": {
+            "[:then, 16, 43, 8, 45, 12]": 0,
+            "[:else, 17, 47, 8, 47, 86]": 0
+          },
+          "[:if, 18, 62, 4, 62, 32]": {
+            "[:then, 19, 62, 4, 62, 14]": 1,
+            "[:else, 20, 62, 4, 62, 32]": 3
+          },
+          "[:if, 21, 67, 4, 67, 36]": {
+            "[:then, 22, 67, 4, 67, 17]": 0,
+            "[:else, 23, 67, 4, 67, 36]": 3
+          },
+          "[:if, 24, 75, 6, 81, 9]": {
+            "[:then, 25, 76, 8, 78, 12]": 0,
+            "[:else, 26, 80, 8, 80, 11]": 0
+          },
+          "[:if, 27, 89, 4, 89, 60]": {
+            "[:then, 28, 89, 4, 89, 42]": 0,
+            "[:else, 29, 89, 4, 89, 60]": 3
+          },
+          "[:if, 30, 94, 4, 94, 36]": {
+            "[:then, 31, 94, 4, 94, 17]": 0,
+            "[:else, 32, 94, 4, 94, 36]": 3
+          },
+          "[:if, 33, 102, 6, 108, 9]": {
+            "[:then, 34, 103, 8, 105, 12]": 0,
+            "[:else, 35, 107, 8, 107, 68]": 0
+          },
+          "[:if, 36, 119, 4, 119, 36]": {
+            "[:then, 37, 119, 4, 119, 17]": 0,
+            "[:else, 38, 119, 4, 119, 36]": 2
+          },
+          "[:if, 39, 126, 6, 132, 9]": {
+            "[:then, 40, 127, 8, 129, 12]": 0,
+            "[:else, 41, 131, 8, 131, 22]": 0
+          },
+          "[:if, 42, 140, 4, 140, 36]": {
+            "[:then, 43, 140, 4, 140, 14]": 1,
+            "[:else, 44, 140, 4, 140, 36]": 1
+          }
+        }
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/genre.rb": {
-        "lines": [
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/list_item.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/list.rb": {
-        "lines": [
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/log.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/log_tag.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/movie_genre.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/movie_person.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/movie.rb": {
-        "lines": [
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/notification.rb": {
-        "lines": [
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/person.rb": {
-        "lines": [
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/review.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/tag.rb": {
-        "lines": [
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/user_achievement.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/user.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/user.rb": {
         "lines": [
           1,
           null,
@@ -165,7 +559,7 @@
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/user_stat.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/application_record.rb": {
         "lines": [
           1,
           1,
@@ -173,43 +567,141 @@
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/vote.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/movie.rb": {
         "lines": [
           1,
           1,
           1,
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          16,
+          null,
+          16,
+          16,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          16,
+          16,
+          null,
+          null,
+          1,
+          0,
+          null,
+          null,
+          1,
+          0,
+          0,
+          null,
+          null,
+          1,
+          0,
+          0,
+          null,
+          null,
+          1,
+          3,
+          null,
           null
         ],
-        "branches": {}
+        "branches": {
+          "[:if, 0, 15, 4, 15, 34]": {
+            "[:then, 1, 15, 4, 15, 14]": 0,
+            "[:else, 2, 15, 4, 15, 34]": 16
+          },
+          "[:unless, 3, 36, 4, 36, 34]": {
+            "[:else, 4, 36, 4, 36, 34]": 0,
+            "[:then, 5, 36, 4, 36, 14]": 0
+          },
+          "[:unless, 6, 41, 4, 41, 34]": {
+            "[:else, 7, 41, 4, 41, 34]": 0,
+            "[:then, 8, 41, 4, 41, 14]": 0
+          }
+        }
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/models/watchlist.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/genre.rb": {
         "lines": [
           1,
           1,
           1,
-          null
-        ],
-        "branches": {}
-      },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/controllers/home_controller.rb": {
-        "lines": [
+          null,
           1,
+          5,
+          null,
           1,
+          3,
+          3,
+          null,
           null,
           null
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/controllers/application_controller.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/movie_genre.rb": {
         "lines": [
           1,
-          null,
+          1,
           1,
           null
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/jobs/application_job.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/movie_person.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/person.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          6,
+          6,
+          6,
+          null,
+          null,
+          null,
+          1,
+          0,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/controllers/home_controller.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/jobs/application_job.rb": {
         "lines": [
           0,
           null,
@@ -221,7 +713,125 @@
         ],
         "branches": {}
       },
-      "/home/saswat/csce606/CSCE606_Fall2025_Project3_Group6/app/mailers/application_mailer.rb": {
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/mailers/application_mailer.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/achievement.rb": {
+        "lines": [
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/email_preference.rb": {
+        "lines": [
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/follow.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/list.rb": {
+        "lines": [
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/list_item.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/log.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/log_tag.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/notification.rb": {
+        "lines": [
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/review.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/tag.rb": {
+        "lines": [
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/user_achievement.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/user_stat.rb": {
+        "lines": [
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/vote.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/felix/Documents/606/project3/CSCE606_Fall2025_Project3_Group6/app/models/watchlist.rb": {
         "lines": [
           0,
           0,
@@ -231,7 +841,7 @@
         "branches": {}
       }
     },
-    "timestamp": 1763515325
+    "timestamp": 1763596553
   },
   "Cucumber Features": {
     "coverage": {
