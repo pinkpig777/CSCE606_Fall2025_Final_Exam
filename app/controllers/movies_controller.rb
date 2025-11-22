@@ -57,7 +57,7 @@ class MoviesController < ApplicationController
     end
 
     @similar_movies = []
-    
+
     if @movie
       # Get similar movies
       similar_data = @tmdb_service.similar_movies(@movie.tmdb_id)
@@ -69,9 +69,9 @@ class MoviesController < ApplicationController
       end
 
       # Load reviews with sorting
-      sort_order = params[:sort] == 'newest' ? :by_date : :by_score
+      sort_order = params[:sort] == "newest" ? :by_date : :by_score
       @reviews = @movie.reviews.includes(:user).send(sort_order)
-      
+
       # Initialize new review for the form
       @review = Review.new
     end

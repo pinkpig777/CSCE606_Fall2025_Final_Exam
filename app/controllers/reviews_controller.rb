@@ -1,8 +1,8 @@
 class ReviewsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_movie, only: [:create, :edit, :update, :destroy]
-  before_action :set_review, only: [:edit, :update, :destroy, :vote, :report]
-  before_action :authorize_user!, only: [:edit, :update, :destroy]
+  before_action :set_movie, only: [ :create, :edit, :update, :destroy ]
+  before_action :set_review, only: [ :edit, :update, :destroy, :vote, :report ]
+  before_action :authorize_user!, only: [ :edit, :update, :destroy ]
 
   def my_reviews
     @reviews = current_user.reviews.includes(:movie).by_date
@@ -13,7 +13,7 @@ class ReviewsController < ApplicationController
     @review.user = current_user
 
     if @review.save
-      redirect_to movie_path(@movie), notice: 'Review was successfully created.'
+      redirect_to movie_path(@movie), notice: "Review was successfully created."
     else
       redirect_to movie_path(@movie), alert: @review.errors.full_messages.to_sentence
     end
@@ -24,7 +24,7 @@ class ReviewsController < ApplicationController
 
   def update
     if @review.update(review_params)
-      redirect_to movie_path(@movie), notice: 'Review was successfully updated.'
+      redirect_to movie_path(@movie), notice: "Review was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -32,7 +32,7 @@ class ReviewsController < ApplicationController
 
   def destroy
     @review.destroy
-    redirect_to movie_path(@movie), notice: 'Review was successfully deleted.'
+    redirect_to movie_path(@movie), notice: "Review was successfully deleted."
   end
 
   def vote
@@ -48,7 +48,7 @@ class ReviewsController < ApplicationController
     else
       @review.votes.create(user: current_user, value: value)
     end
-    
+
     redirect_back(fallback_location: root_path)
   end
 
