@@ -156,10 +156,8 @@ class MoviesController < ApplicationController
 
   def needs_detail_refresh?(movie)
     return true unless movie.cached?
-    return true if movie.runtime.blank?
-    return true if movie.genres.empty?
-    return true if movie.movie_people.empty?
-    false
+    # Only refresh if the record is skeletal (missing all core detail fields).
+    movie.runtime.blank? && movie.genres.empty? && movie.movie_people.empty?
   end
 
   def sync_movies_to_db(movies_data)
