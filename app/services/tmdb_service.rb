@@ -148,7 +148,7 @@ class TmdbService
       "Authorization" => "Bearer #{@access_token}",
       "Accept" => "application/json"
     }
-    
+
     response = @conn.get(path) do |req|
       headers.each { |k, v| req.headers[k] = v }
       params.each { |k, v| req.params[k] = v }
@@ -157,4 +157,3 @@ class TmdbService
     response
   end
 end
-
