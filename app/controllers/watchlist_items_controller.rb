@@ -8,15 +8,15 @@ class WatchlistItemsController < ApplicationController
     movie = find_or_create_movie_from_param(params[:movie_id])
 
     unless movie
-      redirect_back fallback_location: movies_path, alert: 'Could not find movie.' and return
+      redirect_back fallback_location: movies_path, alert: "Could not find movie." and return
     end
 
     item = watchlist.watchlist_items.find_or_initialize_by(movie_id: movie.id)
     if item.new_record?
       item.save
-      redirect_back fallback_location: watchlist_path, notice: 'Added to watchlist.'
+      redirect_back fallback_location: watchlist_path, notice: "Added to watchlist."
     else
-      redirect_back fallback_location: watchlist_path, notice: 'Already in watchlist.'
+      redirect_back fallback_location: watchlist_path, notice: "Already in watchlist."
     end
   end
 
@@ -26,13 +26,13 @@ class WatchlistItemsController < ApplicationController
       movie = item.movie
       if item.destroy
         # Provide an undo link that posts to the restore action
-        undo_link = view_context.link_to('Undo', restore_watchlist_items_path(movie_id: movie.id), method: :post)
+        undo_link = view_context.link_to("Undo", restore_watchlist_items_path(movie_id: movie.id), method: :post)
         redirect_back fallback_location: watchlist_path, notice: "Removed from #{movie.title} watchlist. "
       else
-        redirect_back fallback_location: watchlist_path, alert: 'Could not remove item.'
+        redirect_back fallback_location: watchlist_path, alert: "Could not remove item."
       end
     else
-      redirect_back fallback_location: watchlist_path, alert: 'Item not found.'
+      redirect_back fallback_location: watchlist_path, alert: "Item not found."
     end
   end
 
@@ -41,15 +41,15 @@ class WatchlistItemsController < ApplicationController
     watchlist = current_user.watchlist || current_user.create_watchlist
     movie = find_or_create_movie_from_param(params[:movie_id])
     unless movie
-      redirect_back fallback_location: watchlist_path, alert: 'Could not restore movie.' and return
+      redirect_back fallback_location: watchlist_path, alert: "Could not restore movie." and return
     end
 
     item = watchlist.watchlist_items.find_or_initialize_by(movie_id: movie.id)
     if item.new_record?
       item.save
-      redirect_back fallback_location: watchlist_path, notice: 'Movie restored to watchlist.'
+      redirect_back fallback_location: watchlist_path, notice: "Movie restored to watchlist."
     else
-      redirect_back fallback_location: watchlist_path, notice: 'Movie already in watchlist.'
+      redirect_back fallback_location: watchlist_path, notice: "Movie already in watchlist."
     end
   end
 

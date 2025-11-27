@@ -6,7 +6,7 @@ class RenameWatchHistoriesToWatchLogsAndCreateWatchHistories < ActiveRecord::Mig
       if index_name_exists?(:watch_logs, "index_watch_histories_on_user_movie_watched_on")
         rename_index :watch_logs, "index_watch_histories_on_user_movie_watched_on", "index_watch_logs_on_user_movie_watched_on"
       else
-        add_index :watch_logs, [:user_id, :movie_id, :watched_on], name: "index_watch_logs_on_user_movie_watched_on"
+        add_index :watch_logs, [ :user_id, :movie_id, :watched_on ], name: "index_watch_logs_on_user_movie_watched_on"
       end
     end
 

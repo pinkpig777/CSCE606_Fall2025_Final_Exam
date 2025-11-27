@@ -19,14 +19,14 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :watchlist, only: [:show]
-  resources :watchlist_items, only: [:create, :destroy] do
+  resource :watchlist, only: [ :show ]
+  resources :watchlist_items, only: [ :create, :destroy ] do
     collection do
       post :restore
     end
   end
 
-  resources :watch_histories, only: [:index, :create, :destroy]
+  resources :watch_histories, only: [ :index, :create, :destroy ]
 
   resources :reviews, only: [] do
     member do

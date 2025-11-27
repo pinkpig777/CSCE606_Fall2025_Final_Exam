@@ -18,7 +18,7 @@ class WatchHistoriesController < ApplicationController
     if params[:watched_from].present?
       begin
         from = Date.parse(params[:watched_from])
-        logs = logs.where('watched_on >= ?', from)
+        logs = logs.where("watched_on >= ?", from)
       rescue ArgumentError
         # ignore invalid date
       end
@@ -27,7 +27,7 @@ class WatchHistoriesController < ApplicationController
     if params[:watched_to].present?
       begin
         to = Date.parse(params[:watched_to])
-        logs = logs.where('watched_on <= ?', to)
+        logs = logs.where("watched_on <= ?", to)
       rescue ArgumentError
         # ignore invalid date
       end
@@ -35,14 +35,14 @@ class WatchHistoriesController < ApplicationController
 
     # sorting - allow only specific options
     case params[:sort]
-    when 'watched_asc'
+    when "watched_asc"
       logs = logs.order(watched_on: :asc)
-    when 'watched_desc'
+    when "watched_desc"
       logs = logs.order(watched_on: :desc)
-    when 'name_asc'
-      logs = logs.joins(:movie).order('movies.title ASC')
-    when 'name_desc'
-      logs = logs.joins(:movie).order('movies.title DESC')
+    when "name_asc"
+      logs = logs.joins(:movie).order("movies.title ASC")
+    when "name_desc"
+      logs = logs.joins(:movie).order("movies.title DESC")
     else
       # default to watched_on desc
       logs = logs.order(watched_on: :desc)
