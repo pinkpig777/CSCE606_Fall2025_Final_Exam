@@ -2,23 +2,33 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable
 
+  # ==================================================
+  # ASSOCIATIONS
+  # ==================================================
+  # Basic
   has_many :reviews, dependent: :destroy
   has_many :votes, dependent: :destroy
+  
+  # Social (Follows)
   has_many :follows, foreign_key: :follower_id, dependent: :destroy
   has_many :followed_users, through: :follows, source: :followed
   has_many :following_users, foreign_key: :followed_id, class_name: "Follow", dependent: :destroy
   has_many :followers, through: :following_users, source: :follower
+
+  # Social & Community (Lists, Logs) - From Feature Branch
+  has_many :lists, dependent: :destroy
   has_many :logs, dependent: :destroy
+
+  # Watchlist & History - From Main Branch
+  has_one :watchlist, dependent: :destroy
+  has_one :watch_history, dependent: :destroy
+  
+  # Stats
   has_one :user_stat, dependent: :destroy
 
   # ==================================================
-  # MERGED ASSOCIATIONS (From Main & Feature branches)
+  # VALIDATIONS
   # ==================================================
-  has_many :lists, dependent: :destroy        # Feature: Social
-  has_one :watchlist, dependent: :destroy     # Main: Watchlist
-  has_one :watch_history, dependent: :destroy # Main: Watch History
-  # ==================================================
-
   validate :password_complexity
 
   validates :username,
@@ -37,6 +47,10 @@ class User < ApplicationRecord
     followed_users.include?(user)
   end
 
+  def admin?
+    id == 1
+  end
+
   private
 
   def password_complexity
@@ -48,9 +62,5 @@ class User < ApplicationRecord
       errors.add :password,
         "must be at least 8 characters long, include at least one uppercase letter, and include at least one number or special character."
     end
-  end
-
-  def admin?
-    id == 1
   end
 end
