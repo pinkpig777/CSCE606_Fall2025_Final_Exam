@@ -154,8 +154,12 @@ Given("the TMDb API is available") do
     .to_return(status: 200, body: movie_details_response.to_json)
 
   # Stub genres API - WebMock matches on the full URL
+  # Clear genres cache first
+  Rails.cache.delete("tmdb_genres")
+
   # Try multiple patterns to ensure we catch the request
-  stub_request(:get, %r{https://api\.themoviedb\.org/3/genre/movie/list})
+  # Match with or without https://
+  stub_request(:get, %r{https?://api\.themoviedb\.org/3/genre/movie/list})
     .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
 
   stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
@@ -166,7 +170,11 @@ Given("the TMDb API is available") do
     .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
 
   # Also stub with query parameters if any
-  stub_request(:get, %r{https://api\.themoviedb\.org/3/genre/movie/list.*})
+  stub_request(:get, %r{https?://api\.themoviedb\.org/3/genre/movie/list.*})
+    .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
+
+  # Stub any request containing genre/movie/list
+  stub_request(:get, %r{.*genre/movie/list.*})
     .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
 end
 
@@ -354,6 +362,8 @@ Then("I should see an error placeholder") do
 end
 
 Given("I have searched for {string}") do |query|
+  # Clear genres cache to ensure fresh data
+  Rails.cache.delete("tmdb_genres")
   visit movies_path
   begin
     fill_in "query", with: query
@@ -378,7 +388,9 @@ end
 
 When("I select {string} from the genre filter") do |genre|
   # Wait for page to load and genres to be populated
-  sleep 1.5
+  # Clear genres cache to ensure fresh API call
+  Rails.cache.delete("tmdb_genres")
+  sleep 2
 
   begin
     # Find the select element first
@@ -386,12 +398,14 @@ When("I select {string} from the genre filter") do |genre|
 
     # Wait for genres to be loaded - check that we have more than just "All Genres"
     # Retry a few times in case genres are still loading
-    5.times do |attempt|
+    10.times do |attempt|
       all_options = select_element.all("option", wait: 2).map { |opt| opt.text.strip }
       if all_options.length > 1
         break
-      elsif attempt < 4
+      elsif attempt < 9
         sleep 0.5
+        # Refresh the page to trigger genres API call
+        visit current_path if attempt == 4
       end
     end
 
