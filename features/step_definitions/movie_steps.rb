@@ -354,27 +354,52 @@ end
 
 When("I select {string} from the genre filter") do |genre|
   # Wait for page to load and genres to be populated
-  sleep 1
+  sleep 1.5
+  
   begin
-    # Try standard Capybara select
-    select genre, from: "genre", wait: 5
-  rescue Capybara::ElementNotFound, Capybara::Ambiguous
-    begin
-      # Find the select element
-      select_element = find("select[name*='genre']", wait: 5)
-      # Try to find option by text (case insensitive)
-      option = select_element.all("option", wait: 2).find { |opt| opt.text.strip == genre || opt.text.strip.downcase == genre.downcase }
-      if option
-        option.select_option
-      else
-        # Fallback: try selecting by partial text match
-        select_element.find("option", text: /#{genre}/i, match: :first).select_option
-      end
-    rescue Capybara::ElementNotFound
-      # Last resort: select by index if we know the position
-      # This shouldn't happen in normal cases
-      raise "Could not find genre option '#{genre}' in the select dropdown"
+    # Find the select element first
+    select_element = find("select[name*='genre']", wait: 10)
+    
+    # Wait for options to be loaded
+    expect(select_element).to have_css("option", minimum: 2, wait: 5)
+    
+    # Get all available options for debugging
+    all_options = select_element.all("option", wait: 2).map { |opt| opt.text.strip }
+    
+    # Try multiple matching strategies
+    found_option = nil
+    
+    # Strategy 1: Exact match
+    found_option = select_element.all("option", wait: 2).find { |opt| opt.text.strip == genre }
+    
+    # Strategy 2: Case insensitive exact match
+    if found_option.nil?
+      found_option = select_element.all("option", wait: 2).find { |opt| opt.text.strip.downcase == genre.downcase }
     end
+    
+    # Strategy 3: Partial match (contains)
+    if found_option.nil?
+      found_option = select_element.all("option", wait: 2).find { |opt| opt.text.strip.downcase.include?(genre.downcase) }
+    end
+    
+    # Strategy 4: Regex match
+    if found_option.nil?
+      begin
+        found_option = select_element.find("option", text: /#{Regexp.escape(genre)}/i, match: :first, wait: 2)
+      rescue Capybara::ElementNotFound
+        # Continue to next strategy
+      end
+    end
+    
+    if found_option
+      found_option.select_option
+    else
+      # Debug: print available options
+      available_options = all_options.join(", ")
+      raise "Could not find genre option '#{genre}' in the select dropdown. Available options: #{available_options}"
+    end
+  rescue Capybara::ElementNotFound => e
+    raise "Could not find genre select dropdown: #{e.message}"
   end
 end
 
