@@ -157,25 +157,36 @@ Given("the TMDb API is available") do
 end
 
 When("I click on {string}") do |movie_title|
+  # Wait for search results to be visible
+  expect(page).to have_css(".grid", wait: 5)
+  sleep 0.5
+  
   # Find the movie card link by title
   # The title is in an h3 inside a link, so we need to find the parent link
   begin
-    # Find h3 with title, then find parent link
-    h3 = find("h3", text: movie_title, match: :first, wait: 5)
-    link = h3.find(:xpath, "./ancestor::a[1]", wait: 2)
-    link.click
-  rescue Capybara::ElementNotFound => e
+    # Find h3 with title, then navigate to parent link
+    h3_element = find("h3", text: movie_title, match: :first, wait: 5)
+    # Find the parent link element using XPath
+    parent_link = h3_element.find(:xpath, "ancestor::a[contains(@href, '/movies/')][1]", wait: 2)
+    parent_link.click
+  rescue Capybara::ElementNotFound
     begin
-      # Try direct link search
-      find("a[href*='/movies/']", text: movie_title, match: :first, wait: 5).click
+      # Alternative: find all movie links and click the one containing the title
+      all_links = all("a[href*='/movies/']", wait: 5)
+      matching_link = all_links.find { |link| link.text.include?(movie_title) }
+      if matching_link
+        matching_link.click
+      else
+        # Fallback: click first movie link
+        first_movie_link = first("a[href*='/movies/']", wait: 5)
+        first_movie_link.click if first_movie_link
+      end
     rescue Capybara::ElementNotFound
-      # Fallback: click first movie link
-      first_link = find("a[href*='/movies/']", match: :first, wait: 5)
-      first_link.click
+      raise "Could not find movie link for '#{movie_title}'"
     end
   end
-  # Wait for navigation
-  sleep 1
+  # Wait for navigation to complete
+  sleep 1.5
 end
 
 Then("I should be on the movie details page") do
