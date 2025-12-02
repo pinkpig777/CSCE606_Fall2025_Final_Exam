@@ -180,10 +180,14 @@ class MoviesController < ApplicationController
     return unless movie && tmdb_data
 
     # Sync genres
-    if tmdb_data["genres"]
+    if tmdb_data["genres"].is_a?(Array)
       movie.movie_genres.destroy_all
       tmdb_data["genres"].each do |genre_data|
-        genre = Genre.find_or_create_from_tmdb(genre_data["id"], genre_data["name"])
+        genre_id = genre_data.is_a?(Hash) ? (genre_data["id"] || genre_data[:id]) : nil
+        genre_name = genre_data.is_a?(Hash) ? (genre_data["name"] || genre_data[:name]) : nil
+        next unless genre_id && genre_name
+        
+        genre = Genre.find_or_create_from_tmdb(genre_id, genre_name)
         MovieGenre.find_or_create_by(movie: movie, genre: genre)
       end
     end
