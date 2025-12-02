@@ -3,29 +3,11 @@ Given("I am on the movies search page") do
 end
 
 Given("I enter {string} in the search field") do |query|
-  # Try different field identifiers
-  begin
-    fill_in "query", with: query
-  rescue Capybara::ElementNotFound
-    begin
-      fill_in "movie[query]", with: query
-    rescue Capybara::ElementNotFound
-      find('input[name*="query"]').set(query)
-    end
-  end
+  fill_in "query", with: query
 end
 
 When("I submit the search") do
-  # Try different button text variations
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    begin
-      find('input[type="submit"]').click
-    rescue Capybara::ElementNotFound
-      find('button[type="submit"]').click
-    end
-  end
+  click_button "Search"
 end
 
 Then("I should see search results") do
@@ -47,32 +29,15 @@ end
 
 Given("I search for {string}") do |query|
   visit movies_path
-  # Use flexible field finding
-  begin
-    fill_in "query", with: query
-  rescue Capybara::ElementNotFound
-    find('input[name*="query"]').set(query)
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  fill_in "query", with: query
+  click_button "Search"
 end
 
 Given("I have previously searched for {string}") do |query|
   # Simulate caching by making a search first
   visit movies_path
-  begin
-    fill_in "query", with: query
-  rescue Capybara::ElementNotFound
-    find('input[name*="query"]').set(query)
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  fill_in "query", with: query
+  click_button "Search"
   # Wait for results to be cached
   sleep 0.5
 end
@@ -83,10 +48,8 @@ Then("the results should load from cache") do
 end
 
 Given("the TMDb API rate limit is exceeded") do
-  # Clear cache to ensure we test without cache
-  Rails.cache.clear
   stub_request(:get, /api\.themoviedb\.org\/3\/search\/movie/)
-    .to_return(status: 429, body: {}.to_json, headers: { 'Content-Type' => 'application/json' })
+    .to_return(status: 429, body: {}.to_json)
 end
 
 Then("I should see cached results") do
@@ -100,9 +63,6 @@ Then("I should see a rate limit message") do
 end
 
 Given("the TMDb API is available") do
-  # Clear Rails cache to ensure fresh data
-  Rails.cache.clear
-
   # Stub successful API responses using WebMock
   search_response = {
     "results" => [
@@ -153,62 +113,12 @@ Given("the TMDb API is available") do
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/\d+/)
     .to_return(status: 200, body: movie_details_response.to_json)
 
-  # Stub genres API - WebMock matches on the full URL
-  # Clear genres cache first
-  Rails.cache.delete("tmdb_genres")
-
-  # Try multiple patterns to ensure we catch the request
-  # Match with or without https://
-  stub_request(:get, %r{https?://api\.themoviedb\.org/3/genre/movie/list})
-    .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
-
   stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
-    .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
-
-  # Stub exact URL as well
-  stub_request(:get, "https://api.themoviedb.org/3/genre/movie/list")
-    .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
-
-  # Also stub with query parameters if any
-  stub_request(:get, %r{https?://api\.themoviedb\.org/3/genre/movie/list.*})
-    .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
-
-  # Stub any request containing genre/movie/list
-  stub_request(:get, %r{.*genre/movie/list.*})
-    .to_return(status: 200, body: genres_response.to_json, headers: { 'Content-Type' => 'application/json' })
+    .to_return(status: 200, body: genres_response.to_json)
 end
 
 When("I click on {string}") do |movie_title|
-  # Wait for search results to be visible
-  expect(page).to have_css(".grid", wait: 5)
-  sleep 0.5
-
-  # Find the movie card link by title
-  # The title is in an h3 inside a link, so we need to find the parent link
-  begin
-    # Find h3 with title, then navigate to parent link
-    h3_element = find("h3", text: movie_title, match: :first, wait: 5)
-    # Find the parent link element using XPath
-    parent_link = h3_element.find(:xpath, "ancestor::a[contains(@href, '/movies/')][1]", wait: 2)
-    parent_link.click
-  rescue Capybara::ElementNotFound
-    begin
-      # Alternative: find all movie links and click the one containing the title
-      all_links = all("a[href*='/movies/']", wait: 5)
-      matching_link = all_links.find { |link| link.text.include?(movie_title) }
-      if matching_link
-        matching_link.click
-      else
-        # Fallback: click first movie link
-        first_movie_link = first("a[href*='/movies/']", wait: 5)
-        first_movie_link.click if first_movie_link
-      end
-    rescue Capybara::ElementNotFound
-      raise "Could not find movie link for '#{movie_title}'"
-    end
-  end
-  # Wait for navigation to complete
-  sleep 1.5
+  find("div", text: movie_title, match: :first).click
 end
 
 Then("I should be on the movie details page") do
@@ -250,19 +160,14 @@ Given("I am viewing a movie with missing poster") do
 end
 
 Then("I should see a placeholder for the poster") do
-  # Check for placeholder text variations
-  expect(page).to have_content(/No Poster|No Poster Available/i)
+  expect(page).to have_content("No Poster Available")
 end
 
 Given("I have previously viewed movie {string}") do |tmdb_id|
-  # Create or find a cached movie
   movie = Movie.find_or_create_by(tmdb_id: tmdb_id.to_i) do |m|
-    m.title = "Inception"
-    m.overview = "A mind-bending thriller"
+    m.title = "Test Movie"
     m.cached_at = Time.current
   end
-  # Ensure it's cached
-  movie.update(cached_at: Time.current) unless movie.cached_at.present?
 end
 
 When("I visit the movie details page for {string}") do |tmdb_id|
@@ -270,8 +175,8 @@ When("I visit the movie details page for {string}") do |tmdb_id|
 end
 
 Then("the cached data should load instantly") do
-  # Cached data should load - check for movie title
-  expect(page).to have_content(/Inception|Test Movie/i, wait: 2)
+  # Cached data should load without API call
+  expect(page).to have_content("Test Movie", wait: 2)
 end
 
 Then("I should see the movie information") do
@@ -284,8 +189,7 @@ Given("the movie with ID {string} does not exist") do |tmdb_id|
 end
 
 Then("I should see an error message") do
-  # Check for error message in various forms
-  expect(page).to have_content(/error|not found|Movie Not Found/i)
+  expect(page).to have_content("error", wait: 5)
 end
 
 Then("I should see {string}") do |text|
@@ -300,20 +204,10 @@ Given("I am viewing the movie details page for {string}") do |movie_title|
       "overview" => "A mind-bending thriller",
       "poster_path" => "/poster.jpg",
       "release_date" => "2010-07-16",
-      "runtime" => 148,
-      "genres" => [ { "id" => 28, "name" => "Action" } ],
-      "credits" => {
-        "cast" => [],
-        "crew" => []
-      }
+      "runtime" => 148
     }.to_json)
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/27205\/similar/)
-    .to_return(status: 200, body: {
-      "results" => [
-        { "id" => 1, "title" => "Interstellar", "poster_path" => "/interstellar.jpg", "release_date" => "2014-11-05" },
-        { "id" => 2, "title" => "The Matrix", "poster_path" => "/matrix.jpg", "release_date" => "1999-03-31" }
-      ]
-    }.to_json)
+    .to_return(status: 200, body: { "results" => [] }.to_json)
   visit movie_path(27205)
 end
 
@@ -358,28 +252,14 @@ Given("the TMDb API fails for similar movies") do
 end
 
 Then("I should see an error placeholder") do
-  expect(page).to have_content(/No similar movies available|error/i)
+  expect(page).to have_content("No similar movies available")
 end
 
 Given("I have searched for {string}") do |query|
-  # Clear genres cache to ensure fresh data
-  Rails.cache.delete("tmdb_genres")
   visit movies_path
-  begin
-    fill_in "query", with: query
-  rescue Capybara::ElementNotFound
-    find('input[name*="query"]').set(query)
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
-  # Wait for page to load - results may or may not be present
-  sleep 0.5
-  # Don't fail if no results - that's a valid state
-  # Just verify we're on the movies page
-  expect(current_path).to match(/movies/)
+  fill_in "query", with: query
+  click_button "Search"
+  expect(page).to have_css(".grid", wait: 5)
 end
 
 Given("I see search results") do
@@ -387,111 +267,28 @@ Given("I see search results") do
 end
 
 When("I select {string} from the genre filter") do |genre|
-  # Wait for page to load and genres to be populated
-  # Clear genres cache to ensure fresh API call
-  Rails.cache.delete("tmdb_genres")
-  sleep 2
-
-  begin
-    # Find the select element first
-    select_element = find("select[name*='genre']", wait: 10)
-
-    # Wait for genres to be loaded - check that we have more than just "All Genres"
-    # Retry a few times in case genres are still loading
-    10.times do |attempt|
-      all_options = select_element.all("option", wait: 2).map { |opt| opt.text.strip }
-      if all_options.length > 1
-        break
-      elsif attempt < 9
-        sleep 0.5
-        # Refresh the page to trigger genres API call
-        visit current_path if attempt == 4
-      end
-    end
-
-    # Get all available options for debugging
-    all_options = select_element.all("option", wait: 2).map { |opt| opt.text.strip }
-
-    # Try multiple matching strategies
-    found_option = nil
-
-    # Strategy 1: Exact match
-    found_option = select_element.all("option", wait: 2).find { |opt| opt.text.strip == genre }
-
-    # Strategy 2: Case insensitive exact match
-    if found_option.nil?
-      found_option = select_element.all("option", wait: 2).find { |opt| opt.text.strip.downcase == genre.downcase }
-    end
-
-    # Strategy 3: Partial match (contains)
-    if found_option.nil?
-      found_option = select_element.all("option", wait: 2).find { |opt| opt.text.strip.downcase.include?(genre.downcase) }
-    end
-
-    # Strategy 4: Regex match
-    if found_option.nil?
-      begin
-        found_option = select_element.find("option", text: /#{Regexp.escape(genre)}/i, match: :first, wait: 2)
-      rescue Capybara::ElementNotFound
-        # Continue to next strategy
-      end
-    end
-
-    if found_option
-      found_option.select_option
-    else
-      # Debug: print available options
-      available_options = all_options.join(", ")
-      raise "Could not find genre option '#{genre}' in the select dropdown. Available options: #{available_options}"
-    end
-  rescue Capybara::ElementNotFound => e
-    raise "Could not find genre select dropdown: #{e.message}"
-  end
+  select genre, from: "genre"
 end
 
 When("I apply the filter") do
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  click_button "Search"
 end
 
 Then("only movies with {string} genre should appear") do |genre|
-  # Wait for results to load, either grid or empty state
-  sleep 0.5
-  # Either grid exists or empty state message
-  has_grid = page.has_css?(".grid", wait: 2)
-  has_empty = page.has_content?(/No movies found|Try a different/i)
-  expect(has_grid || has_empty).to be true
-  # If grid exists, verify we're on the movies page
-  expect(current_path).to match(/movies/) if has_grid
+  # This is a simplified check - in reality we'd verify genre_ids
+  expect(page).to have_css(".grid", wait: 5)
 end
 
 When("I select {string} from the decade filter") do |decade|
-  begin
-    select decade, from: "decade"
-  rescue Capybara::ElementNotFound
-    find("select[name*='decade']").select(decade)
-  end
+  select decade, from: "decade"
 end
 
 Then("only movies from {string} should appear") do |decade|
-  # Wait for results to load
-  sleep 1
-  # Check for various valid states after filtering
-  has_grid = page.has_css?(".grid", wait: 3)
-  has_empty = page.has_content?(/No movies found|Try a different/i, wait: 2)
-  has_error = page.has_content?(/error|Error|An error occurred/i, wait: 2)
-  # After filtering, any of these states is valid:
-  # - Grid with filtered results
-  # - Empty state (no movies match the filter)
-  # - Error message
-  result = has_grid || has_empty || has_error
-  error_msg = "Expected grid, empty state, or error after filtering. Current path: #{current_path}"
-  expect(result).to be true
-  # Verify we're still on the movies page
-  expect(current_path).to match(/movies/)
+  expect(page).to have_css(".grid", wait: 5)
+end
+
+Then("only movies from 2010s should appear") do
+  expect(page).to have_css(".grid", wait: 5)
 end
 
 Then("I should see filtered results") do
@@ -499,20 +296,11 @@ Then("I should see filtered results") do
 end
 
 When("I apply the filters") do
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  click_button "Search"
 end
 
 Then("only Action movies from 2010s should appear") do
-  # Wait for results to load, either grid or empty state
-  sleep 0.5
-  has_grid = page.has_css?(".grid", wait: 2)
-  has_empty = page.has_content?(/No movies found|Try a different/i)
-  expect(has_grid || has_empty).to be true
-  expect(current_path).to match(/movies/) if has_grid
+  expect(page).to have_css(".grid", wait: 5)
 end
 
 Then("the intersection of filters should be shown") do
@@ -520,34 +308,14 @@ Then("the intersection of filters should be shown") do
 end
 
 Given("I have applied genre and decade filters") do
-  begin
-    select "Action", from: "genre"
-  rescue Capybara::ElementNotFound
-    find("select[name*='genre']").select("Action")
-  end
-  begin
-    select "2010s", from: "decade"
-  rescue Capybara::ElementNotFound
-    find("select[name*='decade']").select("2010s")
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  select "Action", from: "genre"
+  select "2010s", from: "decade"
+  click_button "Search"
 end
 
 When("I clear all filters") do
-  begin
-    select "All Genres", from: "genre"
-  rescue Capybara::ElementNotFound
-    find("select[name*='genre']").select("All Genres")
-  end
-  begin
-    select "All Decades", from: "decade"
-  rescue Capybara::ElementNotFound
-    find("select[name*='decade']").select("All Decades")
-  end
+  select "All Genres", from: "genre"
+  select "All Decades", from: "decade"
 end
 
 When("I refresh the page") do
@@ -563,17 +331,8 @@ Then("I should see all movies") do
 end
 
 When("I select {string}") do |sort_option|
-  begin
-    select sort_option, from: "sort_by"
-  rescue Capybara::ElementNotFound
-    # Try alternative selectors
-    find("select[name*='sort']").select(sort_option)
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  select sort_option, from: "sort_by"
+  click_button "Search"
 end
 
 Then("the results should be ordered by popularity") do
@@ -614,36 +373,17 @@ Given("I have no search results") do
       "results" => [],
       "total_pages" => 0,
       "total_results" => 0
-    }.to_json, headers: { 'Content-Type' => 'application/json' })
+    }.to_json)
   visit movies_path
-  begin
-    fill_in "query", with: "nonexistentmovie12345"
-  rescue Capybara::ElementNotFound
-    find('input[name*="query"]').set("nonexistentmovie12345")
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  fill_in "query", with: "nonexistentmovie12345"
+  click_button "Search"
 end
 
 When("I try to sort the results") do
-  begin
-    select "Sort by Popularity", from: "sort_by"
-  rescue Capybara::ElementNotFound
-    find("select[name*='sort']").select("Sort by Popularity")
-  end
-  begin
-    click_button "Search"
-  rescue Capybara::ElementNotFound
-    find('input[type="submit"]').click
-  end
+  select "Sort by Popularity", from: "sort_by"
+  click_button "Search"
 end
 
 Then("the empty state should remain unchanged") do
-  # Check for empty state or error message
-  has_empty = page.has_content?(/No movies found|Try a different/i)
-  has_error = page.has_content?(/error|Error|An error occurred/i)
-  expect(has_empty || has_error).to be true
+  expect(page).to have_content("No movies found")
 end
