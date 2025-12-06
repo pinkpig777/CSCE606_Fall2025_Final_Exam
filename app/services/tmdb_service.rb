@@ -110,6 +110,66 @@ class TmdbService
     end
   end
 
+  def trending_movies(time_window: "week", page: 1)
+    cache_key = "tmdb_trending_#{time_window}_page_#{page}"
+    cached = Rails.cache.read(cache_key)
+
+    begin
+      response = authorized_get(
+        "trending/movie/#{time_window}",
+        params: { page: page },
+        log_context: "time_window=#{time_window} page=#{page}"
+      )
+
+      if response.status == 429
+        return cached if cached.present?
+        return { results: [], total_pages: 0, error: "Rate limit exceeded. Please try again later." }
+      end
+
+      if response.success?
+        data = response.body
+        Rails.cache.write(cache_key, data, expires_in: 2.hours)
+        data
+      else
+        cached.presence || { results: [], total_pages: 0, error: "Unable to fetch trending movies" }
+      end
+    rescue Faraday::TimeoutError, Faraday::ConnectionFailed
+      cached.presence || { results: [], total_pages: 0, error: "Connection error while fetching trending movies" }
+    rescue StandardError
+      cached.presence || { results: [], total_pages: 0, error: "An error occurred while fetching trending movies" }
+    end
+  end
+
+  def top_rated_movies(page: 1)
+    cache_key = "tmdb_top_rated_page_#{page}"
+    cached = Rails.cache.read(cache_key)
+
+    begin
+      response = authorized_get(
+        "movie/top_rated",
+        params: { page: page },
+        log_context: "page=#{page}"
+      )
+
+      if response.status == 429
+        return cached if cached.present?
+        return { results: [], total_pages: 0, error: "Rate limit exceeded. Please try again later." }
+      end
+
+      if response.success?
+        data = response.body
+        Rails.cache.write(cache_key, data, expires_in: 4.hours)
+        data
+      else
+        cached.presence || { results: [], total_pages: 0, error: "Unable to fetch top rated movies" }
+      end
+    rescue Faraday::TimeoutError, Faraday::ConnectionFailed
+      cached.presence || { results: [], total_pages: 0, error: "Connection error while fetching top rated movies" }
+    rescue StandardError
+      cached.presence || { results: [], total_pages: 0, error: "An error occurred while fetching top rated movies" }
+    end
+  end
+
   def genres
     cache_key = "tmdb_genres"
     cached = Rails.cache.read(cache_key)

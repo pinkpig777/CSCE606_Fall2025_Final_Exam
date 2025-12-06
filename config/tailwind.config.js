@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         cinematico: {
           black: "#0A0A0F",
+          dark: "#121212",
           gold: "#D4AF37",
           grey: "#6C757D",
           light: "#F2F2F2",

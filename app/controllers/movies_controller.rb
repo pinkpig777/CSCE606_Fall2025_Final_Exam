@@ -37,6 +37,7 @@ class MoviesController < ApplicationController
       @total_pages = 0
       @total_results = 0
       @error = nil
+      load_discovery_content
     end
 
     # Get genres for filter dropdown
@@ -98,6 +99,62 @@ class MoviesController < ApplicationController
     @tmdb_service = TmdbService.new
   end
 
+  def load_discovery_content
+    @show_discovery = true
+    @recommendations = []
+    @trending_movies = []
+    @high_rated_unwatched = []
+    @recommendations_error = nil
+    @trending_error = nil
+    @high_rated_error = nil
+    @has_watch_logs = false
+
+    watched_tmdb_ids = []
+
+    if user_signed_in?
+      watch_history = current_user.watch_history
+      if watch_history&.watch_logs&.exists?
+        @has_watch_logs = true
+        watch_logs = watch_history.watch_logs.includes(:movie).order(watched_on: :desc)
+        watched_tmdb_ids = watch_logs.map { |wl| wl.movie&.tmdb_id }.compact.uniq
+        recent_movies = watch_logs.limit(3).map(&:movie).compact
+
+        rec_pool = []
+        recent_movies.each do |movie|
+          next unless movie.tmdb_id
+          similar_data = @tmdb_service.similar_movies(movie.tmdb_id)
+          if similar_data["results"]
+            rec_pool.concat(similar_data["results"])
+          elsif similar_data["error"]
+            @recommendations_error ||= similar_data["error"]
+          end
+        end
+
+        rec_pool.reject! { |movie| watched_tmdb_ids.include?(movie["id"]) }
+        @recommendations = rec_pool.uniq { |movie| movie["id"] }.first(12)
+        sync_movies_to_db(@recommendations) if @recommendations.any?
+      end
+    end
+
+    trending_data = @tmdb_service.trending_movies || {}
+    if trending_data["results"].present?
+      @trending_movies = trending_data["results"]
+      sync_movies_to_db(@trending_movies)
+    else
+      @trending_error = trending_data["error"] || "Unable to load trending movies right now."
+    end
+
+    top_rated_data = @tmdb_service.top_rated_movies || {}
+    if top_rated_data["results"].present?
+      filtered = top_rated_data["results"].select { |movie| (movie["vote_average"] || 0) >= 7.5 }
+      filtered = filtered.reject { |movie| watched_tmdb_ids.include?(movie["id"]) }
+      @high_rated_unwatched = filtered.first(12)
+      sync_movies_to_db(@high_rated_unwatched)
+    else
+      @high_rated_error = top_rated_data["error"] || "Unable to load top rated movies right now."
+    end
+  end
+
   def apply_filters(movies)
     filtered = movies
 
@@ -114,17 +171,17 @@ class MoviesController < ApplicationController
 
     # Filter by decade
     if @decade_filter.present?
-        filtered = filtered.select do |movie_data|
-          release_date = movie_data["release_date"]
-          next false unless release_date
-          begin
-            year = Date.parse(release_date).year
-          rescue ArgumentError, TypeError
-            next false
-          end
-          next false unless year
-          (year / 10) * 10 == @decade_filter
+      filtered = filtered.select do |movie_data|
+        release_date = movie_data["release_date"]
+        next false unless release_date
+        begin
+          year = Date.parse(release_date).year
+        rescue ArgumentError, TypeError
+          next false
         end
+        next false unless year
+        (year / 10) * 10 == @decade_filter
+      end
     end
 
     filtered

@@ -52,7 +52,7 @@
             <div class="mb-6 relative inline-block text-left">
               <%= form_with url: list_list_items_path(list_id: 0), method: :post, class: "flex gap-2 items-center" do |f| %>
                 <%= hidden_field_tag :movie_id, @movie.id %>
-                <%= select_tag :list_id, 
+                <%= select_tag :selected_list_id, 
                     options_from_collection_for_select(current_user.lists, :id, :name), 
                     prompt: "Add to List...",
                     class: "bg-cinematico-dark text-white text-sm rounded border border-gray-700 px-3 py-2 focus:border-cinematico-gold focus:ring-1 focus:ring-cinematico-gold" %>
@@ -62,7 +62,7 @@
           <% end %>
           <div class="flex flex-wrap gap-4 mb-4 text-gray-300">
             <% if @movie.release_date %>
-              <span><%= @movie.release_date.year %></span>
+              <span><%= format_date(@movie.release_date) %></span>
             <% end %>
             <% if @movie.runtime %>
               <span><%= @movie.runtime %> min</span>
@@ -142,6 +142,10 @@
                   <%= label_tag :watched_on, "Watched On", class: "block text-sm text-cinematico-grey mb-1" %>
                   <%= date_field_tag :watched_on, Date.current, class: "w-full bg-cinematico-black border border-gray-700 rounded text-white px-3 py-2" %>
                 </div>
+                <div class="mb-3">
+                  <%= label_tag :rating, "Rating (1-10)", class: "block text-sm text-cinematico-grey mb-1" %>
+                  <%= number_field_tag :rating, nil, in: 1..10, class: "w-full bg-cinematico-black border border-gray-700 rounded text-white px-3 py-2" %>
+                </div>
                 <%= f.submit "Log as Watched", class: "px-4 py-2 bg-cinematico-gold text-cinematico-black rounded font-semibold" %>
               <% end %>
             </div>
@@ -155,7 +159,7 @@
                 </div>
                 <div>
                   <%= f.label :body, "Your Thoughts", class: "block text-sm font-medium text-gray-200 mb-1" %>
-                  <%= f.text_area :body, rows: 3, placeholder: "What did you think of this movie?", class: "w-full bg-cinematico-black border border-gray-700 rounded text-white placeholder-gray-400 focus:border-cinematico-gold focus:ring-1 focus:ring-cinematico-gold px-3 py-2" %>
+              <%= f.text_area :body, rows: 3, placeholder: "What did you think of this movie?", class: "w-full bg-cinematico-black border border-gray-700 rounded text-cinematico-light placeholder-cinematico-light focus:border-cinematico-gold focus:ring-1 focus:ring-cinematico-gold px-3 py-2" %>
                 </div>
                 <%= f.submit "Post Review", class: "cursor-pointer px-6 py-2 bg-cinematico-gold text-cinematico-black font-bold rounded hover:bg-yellow-500 transition" %>
               <% end %>
@@ -206,15 +210,9 @@
                     
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cinematico-black to-transparent p-3">
                       <h3 class="font-semibold text-white text-sm mb-1 line-clamp-2"><%= movie['title'] %></h3>
-                      <% if movie['release_date'] %>
-                        <p class="text-cinematico-grey text-xs">
-                          <% begin %>
-                            <%= Date.parse(movie['release_date']).year %>
-                          <% rescue ArgumentError, TypeError %>
-                            N/A
-                          <% end %>
-                        </p>
-                      <% end %>
+                    <% if movie['release_date'] %>
+                      <p class="text-cinematico-light text-xs"><%= format_date(movie['release_date']) || "N/A" %></p>
+                    <% end %>
                     </div>
                   </div>
                 <% end %>

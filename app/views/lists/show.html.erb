@@ -5,15 +5,27 @@
     </div>
     
     <div class="mb-12 border-b border-gray-800 pb-8">
-      <div class="flex justify-between items-start">
+      <div class="flex justify-between items-start gap-4">
         <div>
           <h1 class="font-cinzel text-5xl text-cinematico-gold mb-4"><%= @list.name %></h1>
           <p class="text-cinematico-light text-lg mb-2"><%= @list.description %></p>
           <p class="text-cinematico-grey text-sm">Curated by <%= link_to @list.user.username || @list.user.email, user_path(@list.user), class: "hover:text-white" %></p>
         </div>
-        <% if current_user == @list.user %>
-          <%= button_to "Delete List", list_path(@list), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-500 hover:text-red-400 bg-transparent border-0 cursor-pointer" %>
-        <% end %>
+        <div class="flex flex-col items-end gap-3">
+          <% if @list.public? %>
+            <% share_url = "#{request.base_url}#{list_path(@list)}" %>
+            <div class="w-full">
+              <label class="block text-xs text-gray-400 mb-1 text-right">Shareable Link</label>
+              <div class="flex gap-2">
+                <input type="text" value="<%= share_url %>" readonly class="w-56 bg-cinematico-dark border border-gray-700 rounded text-cinematico-light px-3 py-2 text-sm">
+                <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('<%= share_url %>')" class="px-3 py-2 bg-cinematico-gold text-cinematico-black text-sm font-semibold rounded hover:bg-opacity-90">Copy</button>
+              </div>
+            </div>
+          <% end %>
+          <% if current_user == @list.user %>
+            <%= button_to "Delete List", list_path(@list), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-500 hover:text-red-400 bg-transparent border-0 cursor-pointer" %>
+          <% end %>
+        </div>
       </div>
     </div>
 

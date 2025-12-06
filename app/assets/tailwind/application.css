@@ -47,3 +47,13 @@
 .feature-card:hover {
   background: rgba(255,255,255,0.1);
 }
+
+/* Override gray text to white for better contrast on dark backgrounds */
+@layer utilities {
+  .text-gray-200,
+  .text-gray-300,
+  .text-gray-400,
+  .text-gray-500 {
+    color: #ffffff !important;
+  }
+}

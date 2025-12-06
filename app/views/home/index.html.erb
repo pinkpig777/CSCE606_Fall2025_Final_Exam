@@ -61,7 +61,7 @@
               <% end %>
               <div class="flex flex-col justify-center">
                 <h4 class="text-gray-200 font-bold group-hover:text-cinematico-gold transition line-clamp-2"><%= movie.title %></h4>
-                <p class="text-xs text-gray-500 mt-1"><%= movie.release_date&.year %></p>
+                <p class="text-xs text-gray-500 mt-1"><%= format_date(movie.release_date) %></p>
               </div>
             <% end %>
           <% end %>

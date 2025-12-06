@@ -18,9 +18,9 @@
                 <% end %>
 
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cinematico-black to-transparent p-3">
-                  <h3 class="font-semibold text-white text-sm mb-1 line-clamp-2"><%= movie.title %></h3>
+                  <h3 class="font-semibold text-cinematico-light text-sm mb-1 line-clamp-2"><%= movie.title %></h3>
                   <% if movie.release_date %>
-                    <p class="text-cinematico-grey text-xs"><%= movie.release_year || 'N/A' %></p>
+                    <p class="text-cinematico-light text-xs"><%= format_date(movie.release_date) || 'N/A' %></p>
                   <% end %>
                 </div>
               </div>
@@ -34,7 +34,7 @@
       </div>
     <% else %>
       <div class="bg-cinematico-dark border border-gray-800 p-6 rounded-lg">
-        <p class="text-cinematico-grey">Your watchlist is empty. Add movies from the search results.</p>
+        <p class="text-cinematico-light">Your watchlist is empty. Add movies from the search results.</p>
       </div>
     <% end %>
   </div>

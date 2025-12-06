@@ -4,9 +4,17 @@
   <div class="max-w-7xl mx-auto space-y-8">
 
     <!-- Page Header -->
-    <div class="text-center mb-8">
+    <div class="text-center mb-8 space-y-3">
       <h1 class="font-cinzel text-4xl md:text-5xl text-[#E8C07D] mb-2">Stats Dashboard</h1>
       <p class="text-gray-300">Your cinematic journey in numbers</p>
+      <div class="flex flex-col items-center gap-2">
+        <% share_url = "#{request.base_url}#{stats_path}" %>
+        <label class="text-xs text-gray-400">Shareable Stats Link</label>
+        <div class="flex gap-2 w-full max-w-xl justify-center">
+          <input type="text" value="<%= share_url %>" readonly class="w-full bg-cinematico-dark border border-gray-700 rounded text-cinematico-light px-3 py-2 text-sm">
+          <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('<%= share_url %>')" class="px-3 py-2 bg-[#E8C07D] text-black text-sm font-semibold rounded hover:bg-opacity-90">Copy</button>
+        </div>
+      </div>
     </div>
 
     <!-- Stats Overview Section -->
@@ -39,15 +47,30 @@
         <% if @overview[:genre_breakdown].present? %>
           <div class="mt-6">
             <h3 class="font-semibold text-white mb-4">Genre Breakdown</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              <% @overview[:genre_breakdown].first(12).each do |genre_name, count| %>
-                <div class="bg-black/40 border border-gray-800 rounded-lg p-3 text-center">
-                  <p class="text-lg font-bold text-white"><%= count %></p>
-                  <p class="text-xs text-gray-300"><%= genre_name %></p>
-                </div>
-              <% end %>
+              <div class="bg-black/40 border border-gray-800 rounded-lg p-4">
+                <canvas id="genreChart" height="320" style="min-height: 320px;"></canvas>
+                <noscript>
+                  <div class="max-h-64 overflow-y-auto mt-4">
+                    <table class="w-full text-sm text-left text-cinematico-light">
+                      <thead class="sticky top-0 bg-black">
+                        <tr class="text-gray-400">
+                          <th class="py-2 pr-4">Genre</th>
+                          <th class="py-2">Movies</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% @overview[:genre_breakdown].first(12).each do |name, count| %>
+                          <tr class="border-t border-gray-800">
+                            <td class="py-2 pr-4"><%= name %></td>
+                            <td class="py-2"><%= count %></td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </noscript>
+              </div>
             </div>
-          </div>
         <% end %>
       <% else %>
         <div class="text-center py-12">
@@ -58,72 +81,79 @@
       <% end %>
     </div>
 
-    <!-- Top Contributors Section -->
+    <!-- Top Genres -->
     <% if @overview[:total_movies] > 0 %>
       <div class="glass p-8 md:p-10">
-        <h2 class="font-cinzel text-2xl text-[#E8C07D] mb-6">Top Contributors</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Top Genres -->
-          <div>
-            <h3 class="font-semibold text-white mb-4">Top Genres</h3>
-            <% if @top_contributors[:top_genres].present? %>
-              <div class="space-y-2">
-                <% @top_contributors[:top_genres].first(5).each_with_index do |genre, index| %>
-                  <div class="bg-black/40 border border-gray-800 rounded-lg p-3 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-[#E8C07D] font-bold"><%= index + 1 %>.</span>
-                      <span class="text-white text-sm"><%= genre[:name] %></span>
-                    </div>
-                    <span class="text-gray-300 text-sm font-semibold"><%= genre[:count] %></span>
-                  </div>
-                <% end %>
+        <h2 class="font-cinzel text-2xl text-[#E8C07D] mb-6">Top Genres</h2>
+        <% if @top_contributors[:top_genres].present? %>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <% @top_contributors[:top_genres].first(9).each_with_index do |genre, index| %>
+              <div class="bg-black/40 border border-gray-800 rounded-lg p-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-[#E8C07D] font-bold"><%= index + 1 %>.</span>
+                  <span class="text-white text-sm"><%= genre[:name] %></span>
+                </div>
+                <span class="text-gray-300 text-sm font-semibold"><%= genre[:count] %></span>
               </div>
-            <% else %>
-              <p class="text-gray-400 text-sm">No genre data available</p>
             <% end %>
           </div>
+        <% else %>
+          <p class="text-gray-400 text-sm">No genre data available</p>
+        <% end %>
+      </div>
 
-          <!-- Top Directors -->
-          <div>
-            <h3 class="font-semibold text-white mb-4">Top Directors</h3>
-            <% if @top_contributors[:top_directors].present? %>
-              <div class="space-y-2">
-                <% @top_contributors[:top_directors].first(5).each_with_index do |director, index| %>
-                  <div class="bg-black/40 border border-gray-800 rounded-lg p-3 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-[#E8C07D] font-bold"><%= index + 1 %>.</span>
-                      <span class="text-white text-sm"><%= director[:name] %></span>
-                    </div>
-                    <span class="text-gray-300 text-sm font-semibold"><%= director[:count] %></span>
+      <!-- Top Directors -->
+      <div class="glass p-8 md:p-10">
+        <h2 class="font-cinzel text-2xl text-[#E8C07D] mb-6">Top Directors</h2>
+        <% if @top_contributors[:top_directors].present? %>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <% @top_contributors[:top_directors].first(9).each_with_index do |director, index| %>
+              <div class="bg-black/40 border border-gray-800 rounded-lg p-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="text-[#E8C07D] font-bold w-5 text-right"><%= index + 1 %>.</span>
+                  <div class="w-10 h-10 rounded-full bg-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    <% if director[:profile_path].present? %>
+                      <%= image_tag TmdbService.poster_url(director[:profile_path]), alt: director[:name], class: "w-full h-full object-cover" %>
+                    <% else %>
+                      <span class="text-xs text-gray-400">N/A</span>
+                    <% end %>
                   </div>
-                <% end %>
+                  <span class="text-white text-sm truncate"><%= director[:name] %></span>
+                </div>
+                <span class="text-gray-300 text-sm font-semibold"><%= director[:count] %></span>
               </div>
-            <% else %>
-              <p class="text-gray-400 text-sm">No director data available</p>
             <% end %>
           </div>
+        <% else %>
+          <p class="text-gray-400 text-sm">No director data available</p>
+        <% end %>
+      </div>
 
-          <!-- Top Actors -->
-          <div>
-            <h3 class="font-semibold text-white mb-4">Top Actors</h3>
-            <% if @top_contributors[:top_actors].present? %>
-              <div class="space-y-2">
-                <% @top_contributors[:top_actors].first(5).each_with_index do |actor, index| %>
-                  <div class="bg-black/40 border border-gray-800 rounded-lg p-3 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-[#E8C07D] font-bold"><%= index + 1 %>.</span>
-                      <span class="text-white text-sm"><%= actor[:name] %></span>
-                    </div>
-                    <span class="text-gray-300 text-sm font-semibold"><%= actor[:count] %></span>
+      <!-- Top Actors -->
+      <div class="glass p-8 md:p-10">
+        <h2 class="font-cinzel text-2xl text-[#E8C07D] mb-6">Top Actors</h2>
+        <% if @top_contributors[:top_actors].present? %>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <% @top_contributors[:top_actors].first(9).each_with_index do |actor, index| %>
+              <div class="bg-black/40 border border-gray-800 rounded-lg p-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="text-[#E8C07D] font-bold w-5 text-right"><%= index + 1 %>.</span>
+                  <div class="w-10 h-10 rounded-full bg-gray-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    <% if actor[:profile_path].present? %>
+                      <%= image_tag TmdbService.poster_url(actor[:profile_path]), alt: actor[:name], class: "w-full h-full object-cover" %>
+                    <% else %>
+                      <span class="text-xs text-gray-400">N/A</span>
+                    <% end %>
                   </div>
-                <% end %>
+                  <span class="text-white text-sm truncate"><%= actor[:name] %></span>
+                </div>
+                <span class="text-gray-300 text-sm font-semibold"><%= actor[:count] %></span>
               </div>
-            <% else %>
-              <p class="text-gray-400 text-sm">No actor data available</p>
             <% end %>
           </div>
-        </div>
+        <% else %>
+          <p class="text-gray-400 text-sm">No actor data available</p>
+        <% end %>
       </div>
 
       <!-- Trend Charts Section -->
@@ -137,14 +167,58 @@
               <h3 class="font-semibold text-white mb-4">Watching Activity Over Time</h3>
               <div class="bg-black/40 border border-gray-800 rounded-lg p-4">
                 <canvas id="activityChart" height="250"></canvas>
-              </div>
-            </div>
+                <noscript>
+                  <div class="max-h-64 overflow-y-auto mt-4">
+                    <table class="w-full text-sm text-left text-cinematico-light">
+                      <thead class="sticky top-0 bg-black">
+                        <tr class="text-gray-400">
+                          <th class="py-2 pr-4">Month</th>
+                          <th class="py-2">Movies Watched</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% @trend_data[:activity_trend].each do |row| %>
+                          <tr class="border-t border-gray-800">
+                            <td class="py-2 pr-4"><%= row[:month] %></td>
+                            <td class="py-2"><%= row[:count] %></td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                </noscript>
+          </div>
+        </div>
 
             <!-- Rating Trend Chart -->
             <div>
               <h3 class="font-semibold text-white mb-4">Average Rating Over Time</h3>
-              <div class="bg-black/40 border border-gray-800 rounded-lg p-4">
-                <canvas id="ratingChart" height="250"></canvas>
+              <div class="bg-black/40 border border-gray-800 rounded-lg p-4 min-h-[280px] flex items-center justify-center">
+                <% if @trend_data[:rating_trend].present? && @trend_data[:rating_trend].any? %>
+                  <canvas id="ratingChart" height="250"></canvas>
+                  <noscript>
+                    <div class="max-h-64 overflow-y-auto mt-4 w-full">
+                      <table class="w-full text-sm text-left text-cinematico-light">
+                        <thead class="sticky top-0 bg-black">
+                          <tr class="text-gray-400">
+                            <th class="py-2 pr-4">Month</th>
+                            <th class="py-2">Average Rating</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% @trend_data[:rating_trend].each do |row| %>
+                            <tr class="border-t border-gray-800">
+                              <td class="py-2 pr-4"><%= row[:month] %></td>
+                              <td class="py-2"><%= row[:average_rating] %></td>
+                            </tr>
+                          <% end %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </noscript>
+                <% else %>
+                  <p class="text-cinematico-light text-sm">Not enough data.</p>
+                <% end %>
               </div>
             </div>
           </div>
@@ -155,14 +229,45 @@
 
       <!-- Heatmap Activity Section -->
       <div class="glass p-8 md:p-10">
-        <h2 class="font-cinzel text-2xl text-[#E8C07D] mb-6">Activity Heatmap</h2>
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-2">
+          <h2 class="font-cinzel text-2xl text-[#E8C07D]">Activity Heatmap</h2>
+          <% if @heatmap_years.present? %>
+            <%= form_with url: stats_path, method: :get, local: true, class: "flex items-center gap-2" do %>
+              <label for="heatmap_year" class="text-sm text-gray-300">Year</label>
+              <%= select_tag :heatmap_year,
+                options_for_select(@heatmap_years, @heatmap_year),
+                class: "bg-cinematico-dark text-cinematico-light text-sm rounded border border-gray-700 px-3 py-2 focus:border-cinematico-gold focus:ring-1 focus:ring-cinematico-gold cursor-pointer",
+                onchange: "this.form.submit()" %>
+            <% end %>
+          <% end %>
+        </div>
         
         <% if @heatmap_data.present? && @heatmap_data.values.any? { |v| v > 0 } %>
           <div class="bg-black/40 border border-gray-800 rounded-lg p-6 overflow-x-auto">
             <div id="heatmap" class="heatmap-container"></div>
+            <noscript>
+              <div class="max-h-64 overflow-y-auto mt-4">
+                <table class="w-full text-sm text-left text-cinematico-light">
+                  <thead class="sticky top-0 bg-black">
+                    <tr class="text-gray-400">
+                      <th class="py-2 pr-4">Date</th>
+                      <th class="py-2">Movies Logged</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @heatmap_data.sort_by { |date, _| date }.each do |date, count| %>
+                      <tr class="border-t border-gray-800">
+                        <td class="py-2 pr-4"><%= date %></td>
+                        <td class="py-2"><%= count %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </noscript>
           </div>
         <% else %>
-          <p class="text-gray-400 text-center py-8">No activity data to display. Start logging movies with dates!</p>
+          <p class="text-gray-400 text-center py-8">No activity data to display for <%= @heatmap_year %>. Try another year.</p>
         <% end %>
       </div>
     <% end %>
@@ -171,187 +276,252 @@
 </div>
 
 <!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" data-turbo-track="reload"></script>
 
 <script>
-  // Activity Trend Chart
-  <% if @trend_data[:activity_trend].length > 0 %>
-    const activityCtx = document.getElementById('activityChart');
-    if (activityCtx) {
-      const activityData = <%= @trend_data[:activity_trend].to_json.html_safe %>;
-      new Chart(activityCtx, {
-        type: 'line',
-        data: {
-          labels: activityData.map(item => item.month),
-          datasets: [{
-            label: 'Movies Watched',
-            data: activityData.map(item => item.count),
-            borderColor: '#E8C07D',
-            backgroundColor: 'rgba(232, 192, 125, 0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: '#F5F5F5' }
-            }
-          },
-          scales: {
-            x: {
-              ticks: { color: '#F5F5F5' },
-              grid: { color: 'rgba(255, 255, 255, 0.1)' }
+  (function() {
+    const renderCharts = () => {
+      // Activity Trend Chart
+      <% if @trend_data[:activity_trend].length > 0 %>
+        const activityCtx = document.getElementById('activityChart');
+        if (activityCtx && typeof Chart !== "undefined" && !activityCtx.dataset.rendered) {
+          const activityData = <%= @trend_data[:activity_trend].to_json.html_safe %>;
+          new Chart(activityCtx, {
+            type: 'line',
+            data: {
+              labels: activityData.map(item => item.month),
+              datasets: [{
+                label: 'Movies Watched',
+                data: activityData.map(item => item.count),
+                borderColor: '#E8C07D',
+                backgroundColor: 'rgba(232, 192, 125, 0.1)',
+                tension: 0,
+                spanGaps: false,
+                fill: true
+              }]
             },
-            y: {
-              ticks: { color: '#F5F5F5', stepSize: 1 },
-              grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              beginAtZero: true
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  labels: { color: '#F5F5F5' }
+                }
+              },
+              scales: {
+                x: {
+                  ticks: { color: '#F5F5F5' },
+                  grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                  ticks: { color: '#F5F5F5', stepSize: 1 },
+                  grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+          activityCtx.dataset.rendered = "true";
+        }
+      <% end %>
+
+      // Rating Trend Chart
+      <% if @trend_data[:rating_trend].length > 0 %>
+        const ratingCtx = document.getElementById('ratingChart');
+        if (ratingCtx && typeof Chart !== "undefined" && !ratingCtx.dataset.rendered) {
+          const ratingData = <%= @trend_data[:rating_trend].to_json.html_safe %>;
+          new Chart(ratingCtx, {
+            type: 'line',
+            data: {
+              labels: ratingData.map(item => item.month),
+              datasets: [{
+                label: 'Average Rating',
+                data: ratingData.map(item => item.average_rating),
+                borderColor: '#E8C07D',
+                backgroundColor: 'rgba(232, 192, 125, 0.1)',
+                tension: 0.4,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  labels: { color: '#F5F5F5' }
+                }
+              },
+              scales: {
+                x: {
+                  ticks: { color: '#F5F5F5' },
+                  grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+              y: {
+                ticks: { color: '#F5F5F5', stepSize: 1 },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                min: 0,
+                max: 10
+              }
             }
           }
-        }
-      });
-    }
-  <% end %>
-
-  // Rating Trend Chart
-  <% if @trend_data[:rating_trend].length > 0 %>
-    const ratingCtx = document.getElementById('ratingChart');
-    if (ratingCtx) {
-      const ratingData = <%= @trend_data[:rating_trend].to_json.html_safe %>;
-      new Chart(ratingCtx, {
-        type: 'line',
-        data: {
-          labels: ratingData.map(item => item.month),
-          datasets: [{
-            label: 'Average Rating',
-            data: ratingData.map(item => item.average_rating),
-            borderColor: '#E8C07D',
-            backgroundColor: 'rgba(232, 192, 125, 0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: '#F5F5F5' }
-            }
-          },
-          scales: {
-            x: {
-              ticks: { color: '#F5F5F5' },
-              grid: { color: 'rgba(255, 255, 255, 0.1)' }
-            },
-            y: {
-              ticks: { color: '#F5F5F5', stepSize: 1 },
-              grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              min: 0,
-              max: 5
-            }
-          }
-        }
-      });
-    }
-  <% end %>
-
-  // Heatmap
-  <% if @heatmap_data.present? %>
-    (function() {
-      const heatmapData = <%= @heatmap_data.to_json.html_safe %>;
-      const container = document.getElementById('heatmap');
-      if (!container) return;
-
-      // Get date range
-      const dates = Object.keys(heatmapData).map(d => new Date(d)).sort((a, b) => a - b);
-      if (dates.length === 0) return;
-
-      const startDate = dates[0];
-      const endDate = dates[dates.length - 1];
-      
-      // Get max value for color intensity
-      const maxValue = Math.max(...Object.values(heatmapData));
-      
-      // Generate weeks
-      const weeks = [];
-      let currentDate = new Date(startDate);
-      
-      // Find the start of the week (Sunday)
-      currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-      
-      while (currentDate <= endDate) {
-        const week = [];
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(currentDate);
-          date.setDate(date.getDate() + i);
-          const dateStr = date.toISOString().split('T')[0];
-          const value = heatmapData[dateStr] || 0;
-          week.push({ date: date, value: value, dateStr: dateStr });
-        }
-        weeks.push(week);
-        currentDate.setDate(currentDate.getDate() + 7);
-      }
-
-      // Month header row to show month/year at top
-      const monthLabels = weeks.map(week => {
-        const firstOfMonth = week.find(day => day.date.getDate() === 1);
-        return firstOfMonth
-          ? `${firstOfMonth.date.toLocaleString('default', { month: 'short' })} ${firstOfMonth.date.getFullYear()}`
-          : "";
-      });
-
-      // Create heatmap HTML
-      let html = '<div class="flex flex-col gap-2">';
-
-      // Month labels row (spacer to align with day labels column)
-      html += '<div class="flex gap-1 items-end">';
-      html += '<div class="w-8"></div>';
-      html += '<div class="flex gap-1 overflow-x-auto">';
-      monthLabels.forEach(label => {
-        html += `<div class="w-4 text-[10px] text-gray-400 text-center leading-4">${label}</div>`;
-      });
-      html += '</div></div>';
-
-      // Day labels + cells
-      html += '<div class="flex gap-1">';
-      html += '<div class="flex flex-col gap-1 mr-2">';
-      ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
-        html += `<div class="h-4 text-xs text-gray-400" style="line-height: 16px;">${day}</div>`;
-      });
-      html += '</div>';
-      
-      html += '<div class="flex gap-1 overflow-x-auto">';
-      weeks.forEach(week => {
-        html += '<div class="flex flex-col gap-1">';
-        week.forEach((day, idx) => {
-          const intensity = maxValue > 0 ? (day.value / maxValue) : 0;
-          const bgColor = intensity === 0 
-            ? '#1a1a1a' 
-            : `rgba(232, 192, 125, ${0.3 + intensity * 0.7})`;
-          
-          const tooltip = day.value > 0 
-            ? `${day.date.toLocaleDateString()}: ${day.value} movie${day.value > 1 ? 's' : ''}`
-            : day.date.toLocaleDateString();
-          
-          html += `<div 
-            class="w-4 h-4 rounded-sm border border-gray-800 cursor-pointer hover:border-[#E8C07D] transition"
-            style="background-color: ${bgColor};"
-            title="${tooltip}"
-            data-date="${day.dateStr}"
-            data-count="${day.value}"
-          ></div>`;
         });
-        html += '</div>';
-      });
-      html += '</div></div>';
+        ratingCtx.dataset.rendered = "true";
+        }
+      <% end %>
 
-      container.innerHTML = html;
-    })();
-  <% end %>
+      // Heatmap
+      <% if @heatmap_data.present? %>
+        (function() {
+          const heatmapData = <%= @heatmap_data.to_json.html_safe %>;
+          const container = document.getElementById('heatmap');
+          if (!container || container.dataset.rendered) return;
+
+          // Get date range
+          const dates = Object.keys(heatmapData).map(d => new Date(d)).sort((a, b) => a - b);
+          if (dates.length === 0) return;
+
+          const startDate = dates[0];
+          const endDate = dates[dates.length - 1];
+          
+          // Get max value for color intensity
+          const maxValue = Math.max(...Object.values(heatmapData));
+          
+          // Generate weeks
+          const weeks = [];
+          let currentDate = new Date(startDate);
+          
+          // Find the start of the week (Sunday)
+          currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+          
+          while (currentDate <= endDate) {
+            const week = [];
+            for (let i = 0; i < 7; i++) {
+              const date = new Date(currentDate);
+              date.setDate(date.getDate() + i);
+              const dateStr = date.toISOString().split('T')[0];
+              const value = heatmapData[dateStr] || 0;
+              week.push({ date: date, value: value, dateStr: dateStr });
+            }
+            weeks.push(week);
+            currentDate.setDate(currentDate.getDate() + 7);
+          }
+
+          // Month header row to show month/year aligned with the grid below
+          const monthLabels = weeks.map(week => {
+            const firstOfMonth = week.find(day => day.date.getDate() === 1);
+            return firstOfMonth
+              ? `${firstOfMonth.date.toLocaleString('default', { month: 'short' })} ${firstOfMonth.date.getFullYear()}`
+              : "";
+          });
+
+          // Create heatmap HTML (single scroll container so header and grid stay aligned)
+          let html = '<div class="flex flex-col gap-2 overflow-x-auto">';
+
+          // Month labels row (spacer to align with day labels column)
+          html += '<div class="flex gap-1 items-end">';
+          html += '<div class="w-8 flex-shrink-0"></div>';
+          html += '<div class="flex gap-1">';
+          monthLabels.forEach(label => {
+            html += `<div class="w-4 text-[10px] text-gray-400 text-center leading-4 flex-shrink-0">${label}</div>`;
+          });
+          html += '</div></div>';
+
+          // Day labels + cells
+          html += '<div class="flex gap-1">';
+          html += '<div class="flex flex-col gap-1 mr-2 flex-shrink-0 sticky left-0 bg-[#0A0A0A] z-10">';
+          ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+            html += `<div class="h-4 text-xs text-gray-400" style="line-height: 16px;">${day}</div>`;
+          });
+          html += '</div>';
+          
+          html += '<div class="flex gap-1">';
+          weeks.forEach(week => {
+            html += '<div class="flex flex-col gap-1 flex-shrink-0">';
+            week.forEach((day, idx) => {
+              const intensity = maxValue > 0 ? (day.value / maxValue) : 0;
+              const bgColor = intensity === 0 
+                ? '#1a1a1a' 
+                : `rgba(232, 192, 125, ${0.3 + intensity * 0.7})`;
+              
+              const dateString = day.date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+              const tooltip = day.value > 0 
+                ? `${dateString}: ${day.value} movie${day.value > 1 ? 's' : ''}`
+                : dateString;
+              
+              html += `<div 
+                class="w-4 h-4 rounded-sm border border-gray-800 cursor-pointer hover:border-[#E8C07D] transition"
+                style="background-color: ${bgColor};"
+                title="${tooltip}"
+                data-date="${day.dateStr}"
+                data-count="${day.value}"
+              ></div>`;
+            });
+            html += '</div>';
+          });
+          html += '</div></div>';
+
+          container.innerHTML = html;
+          container.dataset.rendered = "true";
+        })();
+      <% end %>
+
+      // Genre Breakdown Bar Chart
+      <% if @overview[:genre_breakdown].present? %>
+        (function() {
+          const ctx = document.getElementById('genreChart');
+          if (!ctx || typeof Chart === "undefined" || ctx.dataset.rendered) return;
+
+          const genreEntries = <%= @overview[:genre_breakdown].first(12).map { |name, count| { name: name, count: count } }.to_json.html_safe %>;
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: genreEntries.map(g => g.name),
+              datasets: [{
+                label: 'Movies',
+                data: genreEntries.map(g => g.count),
+                backgroundColor: [
+                  'rgba(232, 192, 125, 0.85)',
+                  'rgba(255, 214, 165, 0.8)',
+                  'rgba(244, 162, 97, 0.8)',
+                  'rgba(233, 196, 106, 0.8)',
+                  'rgba(42, 157, 143, 0.8)',
+                  'rgba(84, 138, 180, 0.8)',
+                  'rgba(94, 103, 164, 0.8)',
+                  'rgba(168, 218, 220, 0.8)',
+                  'rgba(69, 123, 157, 0.8)',
+                  'rgba(230, 111, 81, 0.8)',
+                  'rgba(190, 99, 135, 0.8)',
+                  'rgba(149, 82, 81, 0.8)'
+                ],
+                borderColor: '#0A0A0A',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: { padding: 12 },
+              plugins: {
+                legend: { labels: { color: '#F5F5F5' }, position: 'bottom' },
+                tooltip: {
+                  callbacks: {
+                    label: ctx => {
+                      const count = ctx.parsed;
+                      return `${ctx.label}: ${count} movie${count === 1 ? '' : 's'}`;
+                    }
+                  }
+                }
+              }
+            }
+          });
+          ctx.dataset.rendered = "true";
+        })();
+      <% end %>
+    };
+
+    document.addEventListener("turbo:load", renderCharts);
+    document.addEventListener("turbo:render", renderCharts);
+  })();
 </script>
 
 <style>

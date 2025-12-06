@@ -2,6 +2,8 @@ class WatchLog < ApplicationRecord
   belongs_to :watch_history
   belongs_to :movie
 
+  attr_accessor :incoming_rating
+
   validates :watched_on, presence: true
   validate :watched_on_cannot_be_in_future
 
@@ -29,9 +31,17 @@ class WatchLog < ApplicationRecord
   def sync_to_log
     return unless user_id && movie_id && watched_on
 
-    Log.find_or_create_by(user_id: user_id, movie_id: movie_id, watched_on: watched_on) do |log|
-      log.rewatch = false
+    rating_value = incoming_rating.presence
+    # Fallback to latest review rating for this movie/user if none provided
+    if rating_value.blank?
+      rating_value = Review.where(user_id: user_id, movie_id: movie_id).order(created_at: :desc).limit(1).pick(:rating)
     end
+    return unless rating_value
+
+    log = Log.find_or_initialize_by(user_id: user_id, movie_id: movie_id, watched_on: watched_on)
+    log.rating = rating_value
+    log.rewatch = false if log.rewatch.nil?
+    log.save!
   rescue StandardError => e
     Rails.logger.error("WatchLog#sync_to_log error: #{e.message}")
   end

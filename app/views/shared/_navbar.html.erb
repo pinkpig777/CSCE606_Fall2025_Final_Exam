@@ -1,12 +1,13 @@
 <nav class="fixed top-0 inset-x-0 z-50 glass-dark py-4">
   <div class="max-w-7xl mx-auto flex items-center justify-between px-6">
 
-    <%= link_to(user_signed_in? ? movies_path : root_path,
+    <%= link_to(root_path,
       class: "text-[#E8C07D] font-cinzel text-2xl tracking-wide") do %>
       CINEMATICO
     <% end %>
 
     <div class="flex items-center gap-6">
+      <%= link_to "Browse", movies_path, class: "text-[#F5F5F5] hover:text-white font-medium" %>
 
       <% if user_signed_in? %>
         <%= link_to "Profile",

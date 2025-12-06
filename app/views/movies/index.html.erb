@@ -11,7 +11,7 @@
             <%= f.text_field :query, 
                 value: @query, 
                 placeholder: "Search for a movie...", 
-                class: "w-full px-4 py-3 bg-cinematico-dark border border-cinematico-grey rounded-lg text-white placeholder-cinematico-grey focus:outline-none focus:border-cinematico-gold transition" %>
+                class: "w-full px-4 py-3 bg-cinematico-dark border border-cinematico-grey rounded-lg text-cinematico-light placeholder-cinematico-light focus:outline-none focus:border-cinematico-gold transition" %>
           </div>
           <%= f.submit "Search", class: "px-6 py-3 bg-cinematico-gold text-cinematico-black font-semibold rounded-lg hover:bg-opacity-90 transition cursor-pointer" %>
         </div>
@@ -23,7 +23,7 @@
             <%= f.select :genre, 
                 options_for_select([["All Genres", ""]] + (@genres.map { |g| [g["name"], g["id"]] } || []), @genre_filter),
                 {},
-                { class: "w-full px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg text-white focus:outline-none focus:border-cinematico-gold" } %>
+                { class: "w-full px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg text-cinematico-light focus:outline-none focus:border-cinematico-gold appearance-none", style: "color: #F2F2F2; background-color: #0A0A0F;" } %>
           </div>
           
           <div class="min-w-[200px]">
@@ -43,7 +43,7 @@
                   ["1930s", 1930]
                 ], @decade_filter),
                 {},
-                { class: "w-full px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg text-white focus:outline-none focus:border-cinematico-gold" } %>
+                { class: "w-full px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg text-cinematico-light focus:outline-none focus:border-cinematico-gold appearance-none", style: "color: #F2F2F2; background-color: #0A0A0F;" } %>
           </div>
 
           <div class="min-w-[200px]">
@@ -55,95 +55,159 @@
                   ["Sort by Release Date", "release_date"]
                 ], @sort_by),
                 {},
-                { class: "w-full px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg text-white focus:outline-none focus:border-cinematico-gold" } %>
+                { class: "w-full px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg text-cinematico-light focus:outline-none focus:border-cinematico-gold appearance-none", style: "color: #F2F2F2; background-color: #0A0A0F;" } %>
           </div>
         </div>
       <% end %>
     </div>
 
-    <!-- Error State -->
-    <% if @error %>
-      <div class="text-center py-12 bg-cinematico-dark border border-red-500 rounded-lg p-6">
-        <p class="text-red-400 text-lg"><%= @error %></p>
-        <p class="text-cinematico-grey mt-2">Showing cached results if available.</p>
-      </div>
-    <% end %>
-
-    <!-- Empty State -->
-    <% if @query.blank? %>
-      <div class="text-center py-12">
-        <p class="text-cinematico-grey text-lg">Please enter a search query to find movies.</p>
-      </div>
-    <% elsif @movies.empty? && !@error %>
-      <div class="text-center py-12">
-        <p class="text-cinematico-grey text-lg">No movies found. Try a different search query.</p>
-      </div>
-    <% end %>
-
-    <!-- Results -->
-    <% if @movies.any? %>
-      <!-- Results Info -->
-      <div class="mb-6 text-gray-200">
-        <p>Found <span class="text-cinematico-gold font-semibold"><%= @total_results %></span> results</p>
-      </div>
-
-      <!-- Movie Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        <% @movies.each do |movie| %>
-          <%= link_to movie_path(movie["id"]), class: "group block focus:outline-none focus-visible:ring-2 focus-visible:ring-cinematico-gold rounded-lg" do %>
-            <div class="relative overflow-hidden rounded-lg bg-cinematico-dark border border-cinematico-grey hover:border-cinematico-gold transition-all duration-300">
-              <% if movie["poster_path"] %>
-                <%= image_tag TmdbService.poster_url(movie["poster_path"]), 
-                    alt: movie["title"], 
-                    class: "w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300",
-                    onerror: "this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'450\\'%3E%3Crect fill=\\'%23333\\' width=\\'300\\' height=\\'450\\'/%3E%3Ctext fill=\\'%23999\\' font-family=\\'Arial\\' font-size=\\'18\\' x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\'%3ENo Poster%3C/text%3E%3C/svg%3E'" %>
-              <% else %>
-                <div class="w-full aspect-[2/3] bg-cinematico-grey flex items-center justify-center">
-                  <span class="text-cinematico-dark">No Poster</span>
-                </div>
-              <% end %>
-              
-              <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-cinematico-black to-transparent p-4">
-                <h3 class="font-semibold text-white text-sm mb-1 line-clamp-2"><%= movie["title"] %></h3>
-                <% if movie["release_date"] %>
-                  <p class="text-cinematico-grey text-xs">
-                    <% begin %>
-                      <%= Date.parse(movie["release_date"]).year %>
-                    <% rescue ArgumentError, TypeError %>
-                      N/A
-                    <% end %>
-                  </p>
-                <% end %>
-                <% if movie["vote_average"] %>
-                  <div class="flex items-center gap-1 mt-1">
-                    <span class="text-cinematico-gold text-xs">★</span>
-                    <span class="text-white text-xs"><%= movie["vote_average"].round(1) %></span>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-
-      <!-- Pagination -->
-      <% if @total_pages > 1 %>
-        <div class="mt-8 flex justify-center gap-2">
-          <% if @page > 1 %>
-            <%= link_to "Previous", movies_path(query: @query, page: @page - 1, genre: @genre_filter, decade: @decade_filter, sort_by: @sort_by), 
-                class: "px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg hover:border-cinematico-gold transition" %>
-          <% end %>
-          
-          <span class="px-4 py-2 text-cinematico-grey">
-            Page <%= @page %> of <%= @total_pages %>
-          </span>
-          
-          <% if @page < @total_pages %>
-            <%= link_to "Next", movies_path(query: @query, page: @page + 1, genre: @genre_filter, decade: @decade_filter, sort_by: @sort_by), 
-                class: "px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg hover:border-cinematico-gold transition" %>
-          <% end %>
+    <% if @query.present? %>
+      <!-- Error State -->
+      <% if @error %>
+        <div class="text-center py-12 bg-cinematico-dark border border-red-500 rounded-lg p-6">
+          <p class="text-red-400 text-lg"><%= @error %></p>
+          <p class="text-cinematico-light mt-2">Showing cached results if available.</p>
         </div>
       <% end %>
+
+      <!-- Empty State -->
+      <% if @movies.empty? && !@error %>
+        <div class="text-center py-12">
+          <p class="text-cinematico-light text-lg">No movies found. Try a different search query.</p>
+        </div>
+      <% end %>
+
+      <!-- Results -->
+      <% if @movies.any? %>
+        <!-- Results Info -->
+        <div class="mb-6 text-gray-200">
+          <p>Found <span class="text-cinematico-gold font-semibold"><%= @total_results %></span> results</p>
+        </div>
+
+        <!-- Movie Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <% @movies.each do |movie| %>
+            <%= render partial: "movie_card", locals: { movie: movie } %>
+          <% end %>
+        </div>
+
+        <!-- Pagination -->
+        <% if @total_pages > 1 %>
+          <div class="mt-8 flex justify-center gap-2">
+            <% if @page > 1 %>
+              <%= link_to "Previous", movies_path(query: @query, page: @page - 1, genre: @genre_filter, decade: @decade_filter, sort_by: @sort_by), 
+                  class: "px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg hover:border-cinematico-gold transition" %>
+            <% end %>
+            
+            <span class="px-4 py-2 text-cinematico-light">
+              Page <%= @page %> of <%= @total_pages %>
+            </span>
+            
+            <% if @page < @total_pages %>
+              <%= link_to "Next", movies_path(query: @query, page: @page + 1, genre: @genre_filter, decade: @decade_filter, sort_by: @sort_by), 
+                  class: "px-4 py-2 bg-cinematico-dark border border-cinematico-grey rounded-lg hover:border-cinematico-gold transition" %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% else %>
+      <div class="space-y-12">
+        <!-- Personalized Recommendations -->
+        <div class="bg-cinematico-dark border border-cinematico-grey rounded-lg p-6 shadow-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div>
+              <h2 class="font-cinzel text-3xl text-cinematico-gold">Personalized Recommendations</h2>
+              <p class="text-cinematico-light text-sm">Tailored suggestions based on what you've logged</p>
+            </div>
+            <% if user_signed_in? && @has_watch_logs %>
+              <span class="px-3 py-1 bg-cinematico-gold/10 text-cinematico-gold text-sm rounded-full">Powered by your watch history</span>
+            <% end %>
+          </div>
+
+          <% if user_signed_in? %>
+            <% if @has_watch_logs %>
+              <% if @recommendations.any? %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                  <% @recommendations.each do |movie| %>
+                    <%= render partial: "movie_card", locals: { movie: movie } %>
+                  <% end %>
+                </div>
+              <% elsif @recommendations_error %>
+                <div class="text-center py-10">
+                  <p class="text-cinematico-light"><%= @recommendations_error %></p>
+                  <p class="text-cinematico-light text-sm mt-2">We'll refresh these picks when the service is available.</p>
+                </div>
+              <% else %>
+                <div class="text-center py-10">
+                  <p class="text-cinematico-light">We need a bit more data to tailor picks for you.</p>
+                  <p class="text-cinematico-light text-sm mt-2">Log a couple of movies you've seen to unlock personalized suggestions.</p>
+                  <%= link_to "Go to your watch history", watch_histories_path, class: "inline-block mt-4 px-4 py-2 bg-cinematico-gold text-cinematico-black rounded font-semibold hover:bg-opacity-90" %>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="text-center py-10">
+                <p class="text-cinematico-light text-lg mb-3">You haven't logged any movies yet.</p>
+                <p class="text-cinematico-light text-sm">Search for a movie and use "Log as Watched" to start building your history.</p>
+                <%= link_to "View your watch history", watch_histories_path, class: "inline-block mt-4 px-4 py-2 bg-cinematico-gold text-cinematico-black rounded font-semibold hover:bg-opacity-90" %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-center py-10">
+              <p class="text-cinematico-light text-lg mb-3">Sign in to unlock personalized recommendations.</p>
+              <%= link_to "Sign In", new_user_session_path, class: "inline-block px-6 py-3 bg-cinematico-gold text-cinematico-black font-semibold rounded-lg hover:bg-opacity-90" %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Trending Movies -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+            <div>
+              <h2 class="font-cinzel text-3xl text-cinematico-gold">Trending Now</h2>
+              <p class="text-cinematico-light text-sm">Fresh from TMDb</p>
+            </div>
+            <span class="text-cinematico-light text-sm">Refresh for updated rankings</span>
+          </div>
+
+          <% if @trending_movies.any? %>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              <% @trending_movies.each do |movie| %>
+                <%= render partial: "movie_card", locals: { movie: movie } %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-10 bg-cinematico-dark border border-cinematico-grey rounded-lg">
+              <p class="text-cinematico-light"><%= @trending_error || "Trending movies will appear once we hear back from TMDb." %></p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Unwatched High-Rated Movies -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+            <div>
+              <h2 class="font-cinzel text-3xl text-cinematico-gold">Unwatched High-Rated</h2>
+              <p class="text-cinematico-light text-sm">Top picks rated 7.5+ that you haven't logged yet</p>
+            </div>
+          </div>
+
+          <% if @high_rated_unwatched.any? %>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              <% @high_rated_unwatched.each do |movie| %>
+                <%= render partial: "movie_card", locals: { movie: movie } %>
+              <% end %>
+            </div>
+          <% elsif user_signed_in? && @has_watch_logs && @high_rated_error.blank? %>
+            <div class="text-center py-10 bg-cinematico-dark border border-cinematico-grey rounded-lg">
+              <p class="text-cinematico-light">Looks like you've already watched our highest-rated picks. Check back soon for new standouts.</p>
+            </div>
+          <% else %>
+            <div class="text-center py-10 bg-cinematico-dark border border-cinematico-grey rounded-lg">
+              <p class="text-cinematico-light"><%= @high_rated_error || "No high-rated suggestions available right now." %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
     <% end %>
   </div>
 </div>

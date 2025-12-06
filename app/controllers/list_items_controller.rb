@@ -2,8 +2,13 @@ class ListItemsController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    @list = current_user.lists.find(params[:list_id])
-    @movie = Movie.find(params[:movie_id])
+    list_id = params[:selected_list_id].presence || params[:list_id]
+    @list = current_user.lists.find_by(id: list_id)
+    @movie = Movie.find_by(id: params[:movie_id])
+
+    unless @list && @movie
+      redirect_back(fallback_location: movies_path, alert: "List or movie not found.") and return
+    end
 
     @list_item = @list.list_items.build(movie: @movie)
 

@@ -32,6 +32,7 @@
           <tr class="text-sm border-b border-gray-800">
             <%# toggle name sort asc/desc %>
             <% name_sort = params[:sort] == 'name_asc' ? 'name_desc' : 'name_asc' %>
+            <th class="py-3 text-cinematico-light">Poster</th>
             <th class="py-3 text-cinematico-light"><%= link_to 'Movie', watch_histories_path(request.query_parameters.merge(sort: name_sort)), class: 'hover:underline' %></th>
             <%# toggle watched sort asc/desc %>
             <% watched_sort = params[:sort] == 'watched_asc' ? 'watched_desc' : 'watched_asc' %>
@@ -43,13 +44,20 @@
           <% @watch_logs.each do |wh| %>
             <tr class="border-b border-gray-800">
               <td class="py-3">
+                <% if wh.movie&.poster_path.present? %>
+                  <%= image_tag wh.movie.poster_url, alt: wh.movie.title, class: "w-16 h-24 rounded object-cover border border-gray-800" %>
+                <% else %>
+                  <div class="w-16 h-24 bg-gray-800 rounded flex items-center justify-center text-xs text-gray-500">N/A</div>
+                <% end %>
+              </td>
+              <td class="py-3">
                 <% if wh.movie %>
                   <%= link_to wh.movie.title, movie_path(wh.movie), class: "text-cinematico-light hover:text-cinematico-gold" %>
                 <% else %>
                   <span class="text-cinematico-light">Unknown Movie (ID: <%= wh.movie_id %>)</span>
                 <% end %>
               </td>
-              <td class="py-3 text-cinematico-light"><%= wh.watched_on %></td>
+              <td class="py-3 text-cinematico-light"><%= format_date(wh.watched_on) %></td>
               <td class="py-3">
                 <%= button_to "Remove", watch_history_path(wh), method: :delete, class: "px-3 py-1 bg-red-600 rounded text-white text-sm" %>
               </td>
