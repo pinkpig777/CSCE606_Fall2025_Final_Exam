@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_06_000804) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_06_020125) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -153,6 +153,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_06_000804) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tmdb_id"], name: "index_movies_on_tmdb_id"
+  end
+
+  create_table "notification_preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.boolean "review_created", default: true
+    t.boolean "review_voted", default: true
+    t.boolean "user_followed", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -306,6 +316,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_06_000804) do
   add_foreign_key "movie_genres", "movies"
   add_foreign_key "movie_people", "movies"
   add_foreign_key "movie_people", "people"
+  add_foreign_key "notification_preferences", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "reviews", "movies"

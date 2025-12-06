@@ -5,6 +5,21 @@ class NotificationCreator
   def self.call(actor:, recipient:, notifiable: nil, notification_type:, body: nil, data: {})
     return if recipient.blank?
 
+    # Check if user wants this notification type
+    # Map user.followed and user.unfollowed to the same preference key
+    preference_key = if notification_type == 'user.unfollowed'
+                       'user_followed'
+                     else
+                       notification_type.gsub('.', '_')
+                     end
+    preference = recipient.notification_preference
+    
+    # If preference exists and is disabled, don't create notification
+    # If preference doesn't exist, allow notification (default behavior)
+    if preference&.respond_to?(preference_key)
+      return unless preference.send(preference_key)
+    end
+
     attrs = build_attributes(actor, recipient, notifiable, notification_type, body, data)
     Notification.create!(attrs)
   rescue ActiveRecord::RecordInvalid => e

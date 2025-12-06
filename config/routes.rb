@@ -61,4 +61,7 @@ Rails.application.routes.draw do
       post :mark_read
     end
   end
+
+  # Notification Preferences
+  resource :notification_preferences, only: [:edit, :update]
 end

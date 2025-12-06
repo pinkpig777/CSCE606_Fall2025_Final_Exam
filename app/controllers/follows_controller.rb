@@ -20,7 +20,7 @@ class FollowsController < ApplicationController
     NotificationCreator.call(
       actor: current_user,
       recipient: @user,
-      notification_type: 'user.unfollowed',
+      notification_type: 'user.followed',
       body: "#{current_user.username} stopped following you"
     )
     current_user.followed_users.delete(@user)
