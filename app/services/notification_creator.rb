@@ -23,12 +23,19 @@ class NotificationCreator
     attrs = build_attributes(actor, recipient, notifiable, notification_type, body, data)
     notification = Notification.create!(attrs)
 
-    # Push fresh dropdown HTML to the recipient in real time
-    Turbo::StreamsChannel.broadcast_update_to(
+    # Push fresh dropdown and list HTML to the recipient in real time
+    Turbo::StreamsChannel.broadcast_replace_to(
       [recipient, :notifications],
       target: "notifications-dropdown",
       partial: "shared/notifications_dropdown",
       locals: { user: recipient, signed_in: true }
+    )
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      [recipient, :notifications],
+      target: "notifications-list",
+      partial: "notifications/list",
+      locals: { notifications: recipient.notifications.recent }
     )
 
     # Send email notification if body is present

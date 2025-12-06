@@ -13,7 +13,25 @@ class NotificationsController < ApplicationController
 
   def mark_read
     @notification&.mark_as_read!
-    head :no_content
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace(
+            "notifications-dropdown",
+            partial: "shared/notifications_dropdown",
+            locals: { user: current_user, signed_in: true }
+          ),
+          turbo_stream.replace(
+            "notifications-list",
+            partial: "notifications/list",
+            locals: { notifications: current_user.notifications.recent }
+          )
+        ]
+      end
+      format.html { head :no_content }
+      format.json { head :no_content }
+    end
   end
 
   def mark_all_read
@@ -25,7 +43,24 @@ class NotificationsController < ApplicationController
       relation.unread.update_all(read: true)
     end
 
-    head :no_content
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace(
+            "notifications-dropdown",
+            partial: "shared/notifications_dropdown",
+            locals: { user: current_user, signed_in: true }
+          ),
+          turbo_stream.replace(
+            "notifications-list",
+            partial: "notifications/list",
+            locals: { notifications: current_user.notifications.recent }
+          )
+        ]
+      end
+      format.html { head :no_content }
+      format.json { head :no_content }
+    end
   end
 
   private

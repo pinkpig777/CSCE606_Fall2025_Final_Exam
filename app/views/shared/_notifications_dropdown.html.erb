@@ -46,8 +46,7 @@
                       <%= button_to "Mark read",
                         mark_read_notification_path(n),
                         method: :post,
-                        remote: true,
-                        form: { 'data-remote': true },
+                        data: { turbo_stream: true },
                         class: "text-xs text-cinematico-gold hover:text-white transition" %>
                     <% end %>
                   </div>
