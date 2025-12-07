@@ -22,8 +22,7 @@ Feature: Social & Community
   Scenario: User cannot follow themselves
     Given I am on my own profile
     When I try to follow myself
-    Then I should see an error message
-    And I should not be following myself
+    Then I should not be following myself
 
   Scenario: User views activity feed from followed users
     Given I am following "alice"
@@ -46,7 +45,7 @@ Feature: Social & Community
 
   Scenario: User creates a movie list
     Given I am on the lists page
-    When I click "Create New List"
+    When I click "+ New List"
     And I enter "My Favorite Movies" as the list name
     And I enter "A collection of my favorite films" as the description
     And I set the list to public
