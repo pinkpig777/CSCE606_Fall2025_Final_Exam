@@ -105,11 +105,24 @@ class WatchHistoriesController < ApplicationController
   def ensure_movie_runtime(movie)
     return unless movie&.runtime.blank? && movie.tmdb_id.present?
 
+    cache_key = "movie_runtime_#{movie.tmdb_id}"
+    cached = Rails.cache.read(cache_key)
+    return if cached == :missing
+    if cached.is_a?(Integer) && cached.positive?
+      movie.update(runtime: cached, cached_at: Time.current) if movie.runtime != cached
+      return
+    end
+
     tmdb = tmdb_service.movie_details(movie.tmdb_id)
     runtime_val = tmdb.is_a?(Hash) ? tmdb["runtime"] || tmdb[:runtime] : nil
-    return unless runtime_val.present? && runtime_val.to_i > 0
+    unless runtime_val.present? && runtime_val.to_i > 0
+      Rails.cache.write(cache_key, :missing, expires_in: 6.hours)
+      return
+    end
 
-    movie.update(runtime: runtime_val.to_i, cached_at: Time.current)
+    runtime_int = runtime_val.to_i
+    Rails.cache.write(cache_key, runtime_int, expires_in: 24.hours)
+    movie.update(runtime: runtime_int, cached_at: Time.current)
   rescue StandardError => e
     Rails.logger.error("WatchHistoriesController#ensure_movie_runtime error: #{e.message}")
   end

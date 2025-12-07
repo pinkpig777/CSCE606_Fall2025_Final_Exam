@@ -6,6 +6,7 @@ class WatchLog < ApplicationRecord
 
   validates :watched_on, presence: true
   validate :watched_on_cannot_be_in_future
+   validate :watched_on_not_before_release
 
   before_validation :assign_user_from_watch_history
   after_create :sync_to_log
@@ -15,6 +16,17 @@ class WatchLog < ApplicationRecord
     return if watched_on.blank?
     if watched_on > Date.current
       errors.add(:watched_on, "can't be in the future")
+    end
+  end
+
+  def watched_on_not_before_release
+    return unless watched_on.present? && movie&.release_date.present?
+
+    release = movie.release_date.is_a?(Date) ? movie.release_date : movie.release_date.to_date rescue nil
+    return unless release
+
+    if watched_on < release
+      errors.add(:watched_on, "can't be before the movie's release date")
     end
   end
 

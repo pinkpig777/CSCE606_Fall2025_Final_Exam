@@ -9,7 +9,6 @@ class HomeController < ApplicationController
       recent_window = 14.days.ago
       @activities = []
       @activities += Review.where(user_id: following_ids).where("created_at >= ?", recent_window).includes(:user, :movie)
-      @activities += Log.where(user_id: following_ids).where("created_at >= ?", recent_window).includes(:user, :movie)
       @activities += WatchLog.where(user_id: following_ids).where("created_at >= ?", recent_window).includes(:watch_history, :movie)
       @activities += Vote.where(user_id: following_ids).where("created_at >= ?", recent_window).includes(:user, review: :movie)
       @activities += Follow.where(follower_id: following_ids).where("created_at >= ?", recent_window).includes(:follower, :followed)

@@ -23,23 +23,8 @@ class MoviesController < ApplicationController
         @total_pages = 0
         @total_results = 0
       else
-        results = []
-        if search_results.is_a?(Hash)
-          results = search_results["results"] || search_results[:results] || []
-          @total_pages = search_results["total_pages"] || search_results[:total_pages] || 0
-          @total_results = search_results["total_results"] || search_results[:total_results] || 0
-        else
-          @total_pages = 0
-          @total_results = 0
-        end
-        @movies = results
-
-        # Apply filters
-        @movies = apply_filters(@movies)
-        # Apply sorting
-        @movies = apply_sorting(@movies)
-
-        # Sync movies to database
+        @movies, @has_next_page, @total_results = filtered_results(search_results)
+        @total_pages = @page + (@has_next_page ? 1 : 0)
         sync_movies_to_db(@movies)
       end
     else
@@ -227,6 +212,49 @@ class MoviesController < ApplicationController
     return true unless movie.cached?
     # Only refresh if the record is skeletal (missing all core detail fields).
     movie.runtime.blank? && movie.genres.empty? && movie.movie_people.empty?
+  end
+
+  # Fetch enough TMDB pages to build a consistent paginated, filtered list.
+  # We accumulate up to the current page's window, then slice after global sorting.
+  def filtered_results(search_results)
+    per_page = 10
+    target_page = @page
+    offset = (target_page - 1) * per_page
+
+    combined = []
+    current_page = 1
+    total_pages_from_api = nil
+    total_results_from_api = nil
+
+    loop do
+      page_data =
+        if current_page == @page
+          search_results
+        else
+          @tmdb_service.search_movies(@query, page: current_page)
+        end
+
+      break unless page_data.is_a?(Hash)
+
+      batch = page_data["results"] || page_data[:results] || []
+      total_pages_from_api ||= page_data["total_pages"] || page_data[:total_pages]
+      total_results_from_api ||= page_data["total_results"] || page_data[:total_results]
+
+      combined.concat(apply_filters(batch))
+
+      break if combined.size >= offset + per_page
+      break if batch.empty?
+      break if total_pages_from_api && current_page >= total_pages_from_api
+
+      current_page += 1
+    end
+
+    sorted = apply_sorting(combined)
+    paged = sorted.slice(offset, per_page) || []
+    has_more = (sorted.size > offset + per_page) || (total_pages_from_api && current_page < total_pages_from_api)
+    total_results = total_results_from_api || sorted.size
+
+    [ paged, has_more, total_results ]
   end
 
   def sync_movies_to_db(movies_data)

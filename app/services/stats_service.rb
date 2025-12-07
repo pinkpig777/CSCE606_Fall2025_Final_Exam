@@ -300,8 +300,20 @@ class StatsService
     return 0 unless movie
     return movie.runtime if movie.runtime.present? && movie.runtime > 0
 
-    update_runtime_from_tmdb(movie)
-    movie.runtime.present? && movie.runtime > 0 ? movie.runtime : 0
+    # Avoid hammering TMDB when runtime is missing; cache the result (including failures)
+    cache_key = runtime_cache_key(movie.tmdb_id)
+    cached = Rails.cache.read(cache_key)
+    return 0 if cached == :missing
+    return cached if cached.is_a?(Integer) && cached.positive?
+
+    runtime_val = update_runtime_from_tmdb(movie)
+    if runtime_val.present? && runtime_val > 0
+      Rails.cache.write(cache_key, runtime_val, expires_in: 24.hours)
+      runtime_val
+    else
+      Rails.cache.write(cache_key, :missing, expires_in: 6.hours)
+      0
+    end
   end
 
   def update_runtime_from_tmdb(movie)
@@ -323,7 +335,12 @@ class StatsService
     runtime_int = runtime_val.to_i
     @runtime_cache[movie.tmdb_id] = runtime_int
     movie.update(runtime: runtime_int, cached_at: Time.current)
+    runtime_int
   rescue StandardError => e
     Rails.logger.error("StatsService#update_runtime_from_tmdb error: #{e.message}")
+  end
+
+  def runtime_cache_key(tmdb_id)
+    "movie_runtime_#{tmdb_id}"
   end
 end
