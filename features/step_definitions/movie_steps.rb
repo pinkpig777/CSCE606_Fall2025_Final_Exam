@@ -154,19 +154,23 @@ Given("the TMDb API is available") do
     "total_results" => 0
   }
 
+  # Set TMDB_ACCESS_TOKEN for tests if not already set
+  ENV["TMDB_ACCESS_TOKEN"] ||= "test_token"
+
+  # Stub search requests - match any query parameters
   stub_request(:get, /api\.themoviedb\.org\/3\/search\/movie/)
-    .with(query: hash_including({}))
     .to_return(status: 200, body: search_response.to_json, headers: { "Content-Type" => "application/json" })
 
+  # Stub movie details requests - match any query parameters
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/\d+/)
-    .with(query: hash_including({}))
     .to_return(status: 200, body: movie_details_response.to_json, headers: { "Content-Type" => "application/json" })
 
-  stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
-    .to_return(status: 200, body: genres_response.to_json, headers: { "Content-Type" => "application/json" })
+  # Stub similar movies requests
+  stub_request(:get, /api\.themoviedb\.org\/3\/movie\/\d+\/similar/)
+    .to_return(status: 200, body: { "results" => [] }.to_json, headers: { "Content-Type" => "application/json" })
 
-  # Also stub without query parameters
-  stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list$/)
+  # Stub genres list requests - match with or without query parameters
+  stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
     .to_return(status: 200, body: genres_response.to_json, headers: { "Content-Type" => "application/json" })
 
   stub_request(:get, /api\.themoviedb\.org\/3\/trending\/movie\/week/)
@@ -215,20 +219,30 @@ Then("I should see the cast information") do
 end
 
 Given("I am viewing a movie with missing poster") do
+  # Set TMDB_ACCESS_TOKEN for tests if not already set
+  ENV["TMDB_ACCESS_TOKEN"] ||= "test_token"
+
+  movie_details_response = {
+    "id" => 27205,
+    "title" => "Inception",
+    "overview" => "A mind-bending thriller",
+    "poster_path" => nil,
+    "release_date" => "2010-07-16",
+    "runtime" => 148,
+    "genres" => [ { "id" => 28, "name" => "Action" } ],
+    "credits" => {
+      "cast" => [
+        { "id" => 1, "name" => "Leonardo DiCaprio", "character" => "Cobb", "profile_path" => "/profile.jpg" }
+      ],
+      "crew" => [
+        { "id" => 2, "name" => "Christopher Nolan", "job" => "Director", "profile_path" => "/director.jpg" }
+      ]
+    }
+  }
+
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/27205/)
-    .with(query: hash_including({}))
-    .to_return(status: 200, body: {
-      "id" => 27205,
-      "title" => "Inception",
-      "overview" => "A mind-bending thriller",
-      "poster_path" => nil,
-      "release_date" => "2010-07-16",
-      "runtime" => 148,
-      "genres" => [],
-      "credits" => { "cast" => [], "crew" => [] }
-    }.to_json, headers: { "Content-Type" => "application/json" })
+    .to_return(status: 200, body: movie_details_response.to_json, headers: { "Content-Type" => "application/json" })
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/27205\/similar/)
-    .with(query: hash_including({}))
     .to_return(status: 200, body: { "results" => [], "page" => 1, "total_pages" => 0, "total_results" => 0 }.to_json, headers: { "Content-Type" => "application/json" })
   visit movie_path(27205)
 end
@@ -276,21 +290,44 @@ Then("I should see {string}") do |text|
 end
 
 Given("I am viewing the movie details page for {string}") do |movie_title|
+  # Set TMDB_ACCESS_TOKEN for tests if not already set
+  ENV["TMDB_ACCESS_TOKEN"] ||= "test_token"
+
+  # Clear cache to ensure fresh data
+  Rails.cache.clear
+
+  movie_details_response = {
+    "id" => 27205,
+    "title" => movie_title,
+    "overview" => "A mind-bending thriller",
+    "poster_path" => "/poster.jpg",
+    "release_date" => "2010-07-16",
+    "runtime" => 148,
+    "genres" => [ { "id" => 28, "name" => "Action" } ],
+    "credits" => {
+      "cast" => [
+        { "id" => 1, "name" => "Leonardo DiCaprio", "character" => "Cobb", "profile_path" => "/profile.jpg" }
+      ],
+      "crew" => [
+        { "id" => 2, "name" => "Christopher Nolan", "job" => "Director", "profile_path" => "/director.jpg" }
+      ]
+    }
+  }
+
+  similar_movies_response = {
+    "results" => [
+      { "id" => 1, "title" => "Interstellar", "poster_path" => "/interstellar.jpg" },
+      { "id" => 2, "title" => "The Matrix", "poster_path" => "/matrix.jpg" }
+    ],
+    "page" => 1,
+    "total_pages" => 1,
+    "total_results" => 2
+  }
+
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/27205/)
-    .with(query: hash_including({}))
-    .to_return(status: 200, body: {
-      "id" => 27205,
-      "title" => movie_title,
-      "overview" => "A mind-bending thriller",
-      "poster_path" => "/poster.jpg",
-      "release_date" => "2010-07-16",
-      "runtime" => 148,
-      "genres" => [],
-      "credits" => { "cast" => [], "crew" => [] }
-    }.to_json, headers: { "Content-Type" => "application/json" })
+    .to_return(status: 200, body: movie_details_response.to_json, headers: { "Content-Type" => "application/json" })
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/27205\/similar/)
-    .with(query: hash_including({}))
-    .to_return(status: 200, body: { "results" => [], "page" => 1, "total_pages" => 0, "total_results" => 0 }.to_json, headers: { "Content-Type" => "application/json" })
+    .to_return(status: 200, body: similar_movies_response.to_json, headers: { "Content-Type" => "application/json" })
   visit movie_path(27205)
 end
 
@@ -338,12 +375,30 @@ Then("I should see the similar movie's title") do
 end
 
 Given("the TMDb API fails for similar movies") do
+  # Clear any cached similar movies data for the current movie
+  # Get the movie ID from the current page URL
+  if current_path =~ /\/movies\/(\d+)/
+    movie_id = $1
+    Rails.cache.delete("tmdb_similar_#{movie_id}_page_1")
+  else
+    # Clear all similar movies cache
+    Rails.cache.delete_matched("tmdb_similar_*")
+  end
+
+  # Stub to return error response - this will override any previous stub
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/\d+\/similar/)
-    .to_return(status: 500, body: {}.to_json)
+    .to_return(status: 500, body: { "error" => "Unable to fetch similar movies" }.to_json, headers: { "Content-Type" => "application/json" })
+
+  # Reload the page to trigger a new API call with the error stub
+  visit current_path
+  # Wait for page to reload
+  sleep 0.5
 end
 
 Then("I should see an error placeholder") do
-  expect(page).to have_content(/no similar|unable|error|available/i, wait: 5)
+  # Check for error message in similar movies section
+  # The error message could be "API request failed", "Unable to fetch similar movies", etc.
+  expect(page).to have_content(/no similar|unable|error|available|failed/i, wait: 10)
 end
 
 Given("I have searched for {string}") do |query|

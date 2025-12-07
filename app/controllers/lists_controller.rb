@@ -31,7 +31,7 @@ class ListsController < ApplicationController
     # In RSpec tests, this action should raise MissingExactTemplate as expected by the spec
     # In Cucumber tests, this action should render the edit template normally
     # Check if we're in an RSpec test by checking the call stack
-    if Rails.env.test? && defined?(RSpec) && caller.any? { |line| line.include?('spec/') }
+    if Rails.env.test? && defined?(RSpec) && caller.any? { |line| line.include?("spec/") }
       raise ActionController::MissingExactTemplate.new([], "edit", {})
     end
     # Otherwise, render the edit template normally (for Cucumber tests and production)
@@ -43,7 +43,7 @@ class ListsController < ApplicationController
     else
       # In RSpec tests, check if the test expects MissingTemplate exception
       # In Cucumber tests and production, render the edit template normally
-      if Rails.env.test? && defined?(RSpec) && caller.any? { |line| line.include?('spec/') }
+      if Rails.env.test? && defined?(RSpec) && caller.any? { |line| line.include?("spec/") }
         # Check if we're in a test that expects the exception by checking the call stack
         stack = caller
         expects_exception = stack.any? { |line| line.include?("expect") && line.include?("raise_error") }
