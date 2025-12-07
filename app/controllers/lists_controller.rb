@@ -27,7 +27,7 @@ class ListsController < ApplicationController
   end
 
   def edit
-    raise ActionController::MissingExactTemplate
+    raise ActionController::MissingExactTemplate.new([], "edit", {})
   end
 
   def update
