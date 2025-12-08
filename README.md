@@ -1,24 +1,43 @@
-# README
+# Cinematico
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Rails-based movie tracking and social platform that integrates with The Movie Database (TMDb) API.
 
-Things you may want to cover:
+## Quick Start
 
-* Ruby version
+For detailed setup and deployment instructions, see the [Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md).
 
-* System dependencies
+### Quick Setup
 
-* Configuration
+```bash
+# Clone the repository
+git clone https://github.com/tamu-edu-students/CSCE606_Fall2025_Project3_Group6.git
+cd CSCE606_Fall2025_Project3_Group6
 
-* Database creation
+# Install dependencies
+bundle install
 
-* Database initialization
+# Set up database
+rails db:create db:migrate
 
-* How to run the test suite
+# Start the server
+rails server
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Visit `http://localhost:3000` to view the application.
 
-* Deployment instructions
+## Documentation
 
-* ...
+- **[Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md)**: Complete setup, architecture, and deployment guide
+- **[User Stories](https://github.com/tamu-edu-students/CSCE606_Fall2025_Project3_Group6/wiki/Features-and-Stories)**: Feature documentation and acceptance criteria
+
+## Technology Stack
+
+- Ruby on Rails 8.0.3
+- PostgreSQL
+- TMDb API v3
+- Tailwind CSS
+- Kamal (Docker deployment)
+
+## License
+
+This project is part of CSCE 606 Fall 2025 Project 3.

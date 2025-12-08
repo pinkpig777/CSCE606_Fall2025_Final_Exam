@@ -8,6 +8,9 @@
 require 'cucumber/rails'
 require 'webmock/cucumber'
 require "simplecov"
+
+# Set TMDB_ACCESS_TOKEN for all Cucumber tests
+ENV["TMDB_ACCESS_TOKEN"] ||= "test_token"
 SimpleCov.start "rails" do
   enable_coverage :branch
   add_filter "/features/"
