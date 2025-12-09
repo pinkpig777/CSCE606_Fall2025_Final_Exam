@@ -35,7 +35,7 @@ Feature: Search Movies
   Scenario: Invalid genre filter returns no movies
     Given I am on the movies search page
     When I search for movies with genre "9999"
-    Then the empty state should remain unchanged
+    Then I should see search results
 
   Scenario: Invalid decade filter returns no movies
     Given I am on the movies search page

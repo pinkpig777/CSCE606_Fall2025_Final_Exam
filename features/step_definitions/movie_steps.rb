@@ -192,6 +192,10 @@ Given("the TMDb API is available") do
 
   stub_request(:get, /api\.themoviedb\.org\/3\/movie\/top_rated/)
     .to_return(status: 200, body: top_rated_response.to_json, headers: { "Content-Type" => "application/json" })
+
+  # Create genres in the database for filter dropdowns
+  Genre.find_or_create_by!(tmdb_id: 28, name: "Action")
+  Genre.find_or_create_by!(tmdb_id: 878, name: "Science Fiction")
 end
 
 When("I click on {string}") do |movie_title|
@@ -413,6 +417,13 @@ Then("I should see an error placeholder") do
 end
 
 Given("I have searched for {string}") do |query|
+  # Ensure genres exist before searching
+  Genre.find_or_create_by!(tmdb_id: 28, name: "Action")
+  Genre.find_or_create_by!(tmdb_id: 878, name: "Science Fiction")
+  
+  # Clear any cached genres from TMDb service
+  Rails.cache.delete("tmdb_genres")
+  
   visit movies_path
   expect(page).to have_css("input[name='query']", wait: 10)
   find("input[name='query']").set(query)
@@ -584,4 +595,55 @@ end
 
 Then("the empty state should remain unchanged") do
   expect(page).to have_content("No movies found")
+end
+
+When("I search for movies with genre {string}") do |genre_id|
+  visit movies_path
+  expect(page).to have_css("input[name='query']", wait: 10)
+  find("input[name='query']").set("test")
+  click_button "Search"
+  # Wait for results
+  sleep 0.5
+  # Manually set the genre parameter - this will filter results
+  visit movies_path(query: "test", genre: genre_id)
+  # Wait for page to load
+  sleep 0.5
+end
+
+When("I search for movies with decade {string}") do |decade|
+  visit movies_path
+  expect(page).to have_css("input[name='query']", wait: 10)
+  find("input[name='query']").set("test")
+  click_button "Search"
+  # Wait for results
+  sleep 0.5
+  # Manually set the decade parameter
+  visit movies_path(query: "test", decade: decade)
+end
+
+When("I search for movies sorted by {string}") do |sort_by|
+  visit movies_path
+  expect(page).to have_css("input[name='query']", wait: 10)
+  find("input[name='query']").set("test")
+  click_button "Search"
+  # Wait for results
+  sleep 0.5
+  # Manually set the sort_by parameter
+  visit movies_path(query: "test", sort_by: sort_by)
+end
+
+When("I search for movies with invalid release dates sorted by {string}") do |sort_by|
+  # Stub API to return movies with invalid release dates
+  stub_request(:get, /api\.themoviedb\.org\/3\/search\/movie/)
+    .to_return(status: 200, body: {
+      "results" => [
+        { "id" => 1, "title" => "Movie1", "release_date" => "2020-01-01", "genre_ids" => [] },
+        { "id" => 2, "title" => "Movie2", "release_date" => "invalid-date", "genre_ids" => [] },
+        { "id" => 3, "title" => "Movie3", "release_date" => nil, "genre_ids" => [] }
+      ],
+      "total_pages" => 1,
+      "total_results" => 3
+    }.to_json, headers: { "Content-Type" => "application/json" })
+  
+  visit movies_path(query: "test", sort_by: sort_by)
 end

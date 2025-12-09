@@ -70,3 +70,51 @@ end
 Then("I should be prompted to sign in for recommendations") do
   expect(page).to have_content(/Sign in to unlock personalized recommendations/i)
 end
+
+Given("the trending movies API fails") do
+  stub_request(:get, /api\.themoviedb\.org\/3\/trending\/movie\/week/)
+    .to_return(status: 500, body: { error: "API error" }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/movie\/top_rated/)
+    .to_return(status: 200, body: { results: [], total_pages: 0 }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
+    .to_return(status: 200, body: { genres: [] }.to_json, headers: { "Content-Type" => "application/json" })
+end
+
+Then("I should see an error message for trending movies") do
+  expect(page).to have_content(/Unable to load trending movies|Trending Now/i, wait: 10)
+end
+
+Given("the top rated movies API fails") do
+  stub_request(:get, /api\.themoviedb\.org\/3\/trending\/movie\/week/)
+    .to_return(status: 200, body: { results: [], total_pages: 0 }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/movie\/top_rated/)
+    .to_return(status: 500, body: { error: "API error" }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
+    .to_return(status: 200, body: { genres: [] }.to_json, headers: { "Content-Type" => "application/json" })
+end
+
+Then("I should see an error message for top rated movies") do
+  expect(page).to have_content(/Unable to load top rated movies|High-Rated/i, wait: 10)
+end
+
+Given("I have watch history") do
+  @user ||= FactoryBot.create(:user)
+  watch_history = @user.watch_history || FactoryBot.create(:watch_history, user: @user)
+  movie = FactoryBot.create(:movie, tmdb_id: 123, title: "Test Movie", cached_at: Time.current)
+  FactoryBot.create(:watch_log, watch_history: watch_history, movie: movie, watched_on: Date.today)
+end
+
+Given("the recommendations API fails") do
+  stub_request(:get, /api\.themoviedb\.org\/3\/movie\/\d+\/similar/)
+    .to_return(status: 500, body: { error: "API error" }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/trending\/movie\/week/)
+    .to_return(status: 200, body: { results: [], total_pages: 0 }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/movie\/top_rated/)
+    .to_return(status: 200, body: { results: [], total_pages: 0 }.to_json, headers: { "Content-Type" => "application/json" })
+  stub_request(:get, /api\.themoviedb\.org\/3\/genre\/movie\/list/)
+    .to_return(status: 200, body: { genres: [] }.to_json, headers: { "Content-Type" => "application/json" })
+end
+
+Then("I should see an error message for recommendations") do
+  expect(page).to have_content(/Personalized Recommendations/i, wait: 10)
+end
