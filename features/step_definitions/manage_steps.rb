@@ -1,3 +1,14 @@
+When("I remove the movie from my watch history") do
+  watch_history = @user.watch_history || @user.create_watch_history
+  log = watch_history.watch_logs.find_by(movie: @movie)
+  expect(log).not_to be_nil
+  page.driver.submit :delete, url_helpers.watch_history_path(log), {}
+end
+
+Then("I should not see the movie in my watch history") do
+  visit url_helpers.watch_histories_path
+  expect(page).not_to have_content(@movie.title, wait: 5)
+end
 require "securerandom"
 
 module FeatureHelpers

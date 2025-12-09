@@ -1,3 +1,17 @@
+Given("the similar movies API fails") do
+  # Get the movie ID from the current page URL
+  if current_path =~ /\/movies\/(\d+)/
+    movie_id = $1
+    Rails.cache.delete("tmdb_similar_#{movie_id}_page_1")
+  else
+    Rails.cache.delete_matched("tmdb_similar_*")
+  end
+  # Stub to return error response for similar movies
+  stub_request(:get, /api\.themoviedb\.org\/3\/movie\/\d+\/similar/)
+    .to_return(status: 500, body: { "error" => "Unable to fetch similar movies" }.to_json, headers: { "Content-Type" => "application/json" })
+  # Reload the page to trigger the error
+  visit current_path
+end
 Given("I am on the movies search page") do
   visit movies_path
   # Wait for page to be fully loaded

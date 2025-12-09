@@ -49,12 +49,13 @@ class MoviesController < ApplicationController
     # Fetch from TMDb if not cached or cache expired
     if @movie.nil? || needs_detail_refresh?(@movie)
       tmdb_data = @tmdb_service.movie_details(params[:id])
-      if tmdb_data
+      if tmdb_data.present? && tmdb_data["id"].present?
         @movie = Movie.find_or_create_from_tmdb(tmdb_data)
         sync_movie_details(@movie, tmdb_data)
       else
         @movie = nil
         @error = "Movie not found"
+        return
       end
     end
 
