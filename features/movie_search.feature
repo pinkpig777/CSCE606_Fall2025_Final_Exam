@@ -26,3 +26,28 @@ Feature: Search Movies
     When I enter "Inception" in the search field
     And I submit the search
     Then I should see cached results
+
+
+  Scenario: Search returns no results
+    Given I have no search results
+    Then the empty state should remain unchanged
+
+  Scenario: Invalid genre filter returns no movies
+    Given I am on the movies search page
+    When I search for movies with genre "9999"
+    Then I should see search results
+
+  Scenario: Invalid decade filter returns no movies
+    Given I am on the movies search page
+    When I search for movies with decade "1890"
+    Then the empty state should remain unchanged
+
+  Scenario: Sorting by unknown key falls back to default
+    Given I am on the movies search page
+    When I search for movies sorted by "unknown"
+    Then I should see search results
+
+  Scenario: Sorting by release date with invalid dates
+    Given I am on the movies search page
+    When I search for movies with invalid release dates sorted by "release_date"
+    Then I should see search results

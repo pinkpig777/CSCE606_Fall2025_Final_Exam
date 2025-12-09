@@ -34,8 +34,16 @@ Feature: Watch history logging
     Then the movie runtime should be updated from tmdb
     And I should see the movie in my watch history
 
+
   Scenario: Filter watch history by title
     Given a movie exists with tmdb id "7101"
     When I log the movie as watched with rating "7"
     And I search my watch history for "7101"
     Then I should see the movie in my watch history
+
+  Scenario: Remove a movie from my watch history
+    Given a movie exists with tmdb id "7105"
+    When I log the movie as watched with rating "9"
+    And I view my watch history sorted by newest
+    And I remove the movie from my watch history
+    Then I should not see the movie in my watch history

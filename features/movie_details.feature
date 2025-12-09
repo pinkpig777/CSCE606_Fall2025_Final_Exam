@@ -28,7 +28,14 @@ Feature: View Movie Details
     Then the cached data should load instantly
     And I should see the movie information
 
-  Scenario: Error message displayed when movie not found
+  Scenario: Viewing a movie that does not exist
     Given the movie with ID "999999" does not exist
     When I visit the movie details page for "999999"
     Then I should see an error message
+
+  Scenario: Similar movies API fails on details page
+    Given I search for "Inception"
+    When I click on "Inception"
+    And the similar movies API fails
+    Then I should see an error placeholder
+

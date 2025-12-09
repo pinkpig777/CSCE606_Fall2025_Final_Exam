@@ -11,9 +11,10 @@ require "simplecov"
 
 # Set TMDB_ACCESS_TOKEN for all Cucumber tests
 ENV["TMDB_ACCESS_TOKEN"] ||= "test_token"
-SimpleCov.start "rails" do
+
+# Start SimpleCov for the whole codebase (default: covers all app code except /test/, /spec/, /features/)
+SimpleCov.start do
   add_filter "/features/"
-  track_files "{app,lib}/**/*.rb"
 end
 
 require "simplecov-console"

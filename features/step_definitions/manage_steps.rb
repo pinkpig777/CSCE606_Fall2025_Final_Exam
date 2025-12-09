@@ -1,3 +1,14 @@
+When("I remove the movie from my watch history") do
+  watch_history = @user.watch_history || @user.create_watch_history
+  log = watch_history.watch_logs.find_by(movie: @movie)
+  expect(log).not_to be_nil
+  page.driver.submit :delete, url_helpers.watch_history_path(log), {}
+end
+
+Then("I should not see the movie in my watch history") do
+  visit url_helpers.watch_histories_path
+  expect(page).not_to have_content(@movie.title, wait: 5)
+end
 require "securerandom"
 
 module FeatureHelpers
@@ -94,6 +105,65 @@ end
 
 Then("I should see a private list alert") do
   expect(page).to have_content(/private/i)
+end
+
+When("I visit my lists index") do
+  visit url_helpers.lists_path
+end
+
+Then("I should see my list in the index") do
+  expect(page).to have_content(@list.name)
+end
+
+Then("I should see a sign in prompt") do
+  expect(page).to have_content(/sign in/i)
+end
+
+When("I visit my private list as owner") do
+  visit url_helpers.list_path(@list)
+end
+
+Then("I should see the list details") do
+  expect(page).to have_content(@list.name)
+end
+
+Given("there is a public list") do
+  user = FactoryBot.create(:user)
+  @public_list = FactoryBot.create(:list, user: user, name: "Public Shared List", public: true)
+end
+
+When("I visit the public list page") do
+  visit url_helpers.list_path(@public_list)
+end
+
+Then("I should see the public list details") do
+  expect(page).to have_content(@public_list.name)
+end
+
+Given("another user has a public list") do
+  user = FactoryBot.create(:user)
+  @other_public_list = FactoryBot.create(:list, user: user, name: "Other Public List", public: true)
+end
+
+When("I visit their list edit page") do
+  visit url_helpers.edit_list_path(@other_public_list)
+end
+
+Then("I should see a not authorized alert") do
+  expect(page).to have_content(/not authorized/i)
+end
+
+Then("I should see the edit list form") do
+  expect(page).to have_content(/Edit List/i)
+  expect(page).to have_field("list_name")
+end
+
+When("I visit my list edit page") do
+  visit url_helpers.edit_list_path(@list)
+end
+
+When("I attempt to delete their list") do
+  page.driver.submit :delete, url_helpers.list_path(@other_public_list, with_host_defaults), {}
 end
 
 Then("I should be redirected to the home page") do
