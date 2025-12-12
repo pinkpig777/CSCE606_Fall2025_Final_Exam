@@ -147,6 +147,26 @@
           <%= link_to "Get Started", new_user_registration_path, class: "px-8 py-3 bg-cinematico-gold text-black font-semibold rounded-lg hover:opacity-90 transition shadow-lg cta-gold-shadow" %>
           <%= link_to "Browse Movies", movies_path, class: "px-8 py-3 border border-cinematico-gold text-cinematico-gold font-semibold rounded-lg hover:bg-cinematico-gold hover:text-black transition" %>
         </div>
+        <div class="mt-8 max-w-4xl mx-auto">
+          <div class="section-surface p-6 md:p-8 border border-cinematico-gold/30 bg-gradient-to-r from-cinematico-dark to-[#1a1a22] shadow-lg">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <p class="text-xs uppercase tracking-[0.2em] text-cinematico-gold/80">Small feature added by Chralie Chiu</p>
+                <h3 class="font-cinzel text-2xl text-cinematico-gold mt-1">Quick stats at a glance</h3>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <div class="px-4 py-2 rounded-lg bg-cinematico-gold/10 border border-cinematico-gold/40">
+                  <p class="text-cinematico-light text-sm">Trending movies</p>
+                  <p class="text-cinematico-gold font-semibold text-2xl leading-tight"><%= @trending_count %></p>
+                </div>
+                <div class="px-4 py-2 rounded-lg bg-cinematico-gold/10 border border-cinematico-gold/40">
+                  <p class="text-cinematico-light text-sm">Unwatched high-rated</p>
+                  <p class="text-cinematico-gold font-semibold text-2xl leading-tight"><%= @high_rated_unwatched_count %></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

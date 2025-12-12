@@ -25,5 +25,30 @@ class HomeController < ApplicationController
 
     # Trending movies for guest view or sidebar
     @trending_movies = Movie.order(created_at: :desc).limit(4)
+    @trending_count = @trending_movies.size
+    @high_rated_unwatched_count = 0
+
+    begin
+      tmdb = TmdbService.new
+
+      trending_data = tmdb.trending_movies || {}
+      @trending_count = (trending_data["results"] || trending_data[:results] || []).size if trending_data.present?
+
+      watched_tmdb_ids = []
+      if user_signed_in?
+        watch_history = current_user.watch_history
+        if watch_history&.watch_logs&.exists?
+          watched_tmdb_ids = watch_history.watch_logs.includes(:movie).map { |wl| wl.movie&.tmdb_id }.compact.uniq
+        end
+      end
+
+      top_rated_data = tmdb.top_rated_movies || {}
+      high_rated = top_rated_data["results"] || top_rated_data[:results] || []
+      filtered = high_rated.select { |movie| (movie["vote_average"] || 0) >= 7.5 }
+      filtered = filtered.reject { |movie| watched_tmdb_ids.include?(movie["id"]) }
+      @high_rated_unwatched_count = filtered.first(12).size
+    rescue StandardError => e
+      Rails.logger.warn("Home#index stats fallback: #{e.message}") if defined?(Rails)
+    end
   end
 end
