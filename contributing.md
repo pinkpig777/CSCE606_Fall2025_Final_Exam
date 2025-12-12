@@ -137,8 +137,6 @@ bin/rails db:seed      # optional sample data
    heroku run rails about
    ```
 
-For anything beyond Heroku (Docker/Kamal deployments, architecture details), see `docs/TECHNICAL_DOCUMENTATION.md`.
-
 ## Common Issues
 - **Webpack/Tailwind not updating**: Ensure `bin/dev` is running (uses `Procfile.dev`) so the Tailwind watcher rebuilds CSS.
 - **Cannot connect to Postgres/Redis locally**: Verify services are running (`psql -d postgres`, `redis-cli ping`) and `REDIS_URL` points to the correct DB index.
