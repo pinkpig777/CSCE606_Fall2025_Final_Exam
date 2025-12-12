@@ -1,8 +1,12 @@
 class Notification < ApplicationRecord
   def self.safe_column_names
-    connection.schema_cache.columns_hash(table_name).keys
-  rescue ActiveRecord::StatementInvalid, ActiveRecord::NoDatabaseError, ActiveRecord::ConnectionNotEstablished
-    []
+    Array(column_names)
+  rescue StandardError
+    begin
+      connection.schema_cache.columns_hash(table_name).keys
+    rescue StandardError
+      []
+    end
   end
 
   def self.safe_has_column?(name)
