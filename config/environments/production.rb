@@ -59,7 +59,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = {
-    host: "cinematico.app",
+    host: "csce606finalexam-d3573ece40b2.herokuapp.com",
     protocol: "https"
   }
 
@@ -68,7 +68,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address:              "smtp.sendgrid.net",
     port:                 587,
-    domain:               "cinematico.app",
+    domain:               "heroku.app",
     user_name:            "apikey",   # <- literal string "apikey"
     password:             ENV["SENDGRID_API_KEY"],
     authentication:       :plain,
